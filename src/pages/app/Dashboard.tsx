@@ -119,10 +119,12 @@ const Dashboard = () => {
               <Target className="h-5 w-5 mr-3" />
               채널 추천 받기
             </Button>
-            <Button className="w-full justify-start" variant="outline" size="lg">
-              <FileText className="h-5 w-5 mr-3" />
-              AI 콘텐츠 생성
-            </Button>
+            <Link to="/app/generate">
+              <Button className="w-full justify-start" variant="outline" size="lg">
+                <FileText className="h-5 w-5 mr-3" />
+                AI 콘텐츠 생성
+              </Button>
+            </Link>
             <Button className="w-full justify-start" variant="hero" size="lg">
               <TrendingUp className="h-5 w-5 mr-3" />
               새 캠페인 시작

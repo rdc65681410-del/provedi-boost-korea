@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import AppLayout from "./pages/App";
 import Dashboard from "./pages/app/Dashboard";
 import Analyze from "./pages/app/Analyze";
+import ContentGenerate from "./pages/app/ContentGenerate";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/app" element={<AppLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="analyze" element={<Analyze />} />
+            <Route path="generate" element={<ContentGenerate />} />
             <Route path="channels" element={<Dashboard />} />
             <Route path="content" element={<Dashboard />} />
             <Route path="timing" element={<Dashboard />} />
