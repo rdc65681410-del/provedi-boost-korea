@@ -8,51 +8,58 @@ import {
   LinkIcon, 
   TrendingUp, 
   Users, 
-  Heart, 
-  MessageCircle, 
-  Share2,
-  Eye,
-  Hash,
+  DollarSign, 
+  Star, 
   Clock,
   AlertCircle,
+  CheckCircle2,
   Loader2,
+  FileText,
+  ThumbsUp,
+  ThumbsDown,
   Target,
+  TrendingDown,
+  Sparkles,
+  Award,
   BarChart3,
-  Instagram,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Youtube,
-  Lightbulb
+  Calendar,
+  Zap
 } from "lucide-react";
 import { toast } from "sonner";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, BarChart, Bar } from "recharts";
 
-interface PlatformRecommendation {
+interface ChannelRecommendation {
   name: string;
   score: number;
-  followers: string;
-  engagementRate: string;
-  bestContentType: string;
+  members: string;
+  activityLevel: string;
+  cost: string;
+  contentType: string;
   reason: string;
-  icon: any;
-  color: string;
+  rating: string;
+  logo: string;
+  pricing: {
+    review: number;
+    question: number;
+    hotdeal: number;
+  };
+  successRate: number;
 }
 
 const Analyze = () => {
-  const [contentUrl, setContentUrl] = useState("");
+  const [productUrl, setProductUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [selectedChannels, setSelectedChannels] = useState<Set<number>>(new Set());
 
   const handleAnalyze = async () => {
-    if (!contentUrl) {
-      toast.error("콘텐츠 URL을 입력해주세요");
+    if (!productUrl) {
+      toast.error("상품 URL을 입력해주세요");
       return;
     }
 
-    // URL 유효성 검사
     try {
-      new URL(contentUrl);
+      new URL(productUrl);
     } catch {
       toast.error("올바른 URL 형식이 아닙니다");
       return;
@@ -60,154 +67,248 @@ const Analyze = () => {
 
     setIsAnalyzing(true);
     
-    // 임시 데모 데이터 (나중에 AI 분석으로 대체)
     setTimeout(() => {
       const mockResult = {
-        content: {
-          title: "여름 신제품 출시 캠페인",
-          type: "이미지 포스트",
-          platform: "Instagram",
-          category: "제품 홍보",
+        product: {
+          name: "북유럽 스타일 원목 선반",
+          category: "가구/인테리어",
+          priceRange: "30,000-50,000원",
+          keywords: ["북유럽", "원목", "선반", "수납", "인테리어"],
+          avgPrice: 42000,
         },
-        performance: {
-          likes: 2847,
-          comments: 182,
-          shares: 94,
-          views: 15234,
-          engagementRate: 6.8,
-          viralScore: 78,
+        overallScore: 78,
+        scoreLevel: "우수",
+        reviewAnalysis: {
+          totalReviews: 298,
+          positiveCount: 234,
+          negativeCount: 64,
+          positiveReviews: [
+            "대부분의 고객들이 디자인과 품질에 만족했다는 리뷰가 많습니다. 조립이 쉽고, 견고하며, 가격 대비 훌륭하다는 평가가 주를 이룹니다.",
+          ],
+          negativeReviews: [
+            "일부 배송 과정에서의 흠집과 부품 누락 문제가 있었습니다. 색상이 사진과 다르다는 의견도 있습니다."
+          ],
         },
-        audience: {
-          primaryAge: "25-34세",
-          gender: "여성 68%, 남성 32%",
-          topLocations: ["서울", "부산", "인천"],
-          interests: ["패션", "라이프스타일", "쇼핑"],
+        competitor: {
+          marketShare: 23,
+          avgPrice: 48000,
+          topBrands: ["브랜드A", "브랜드B", "브랜드C"],
+          competitionLevel: "중간",
+          pricePosition: "경쟁력 있음",
         },
-        hashtags: [
-          { tag: "#신상품", performance: 95, posts: "128K" },
-          { tag: "#여름패션", performance: 89, posts: "245K" },
-          { tag: "#데일리룩", performance: 84, posts: "1.2M" },
-          { tag: "#OOTD", performance: 78, posts: "890K" },
-          { tag: "#패션스타그램", performance: 72, posts: "456K" },
+        roi: {
+          estimatedInvestment: 350000,
+          expectedRevenue: 1250000,
+          roi: 257,
+          breakEven: "약 2-3주",
+          profitMargin: 900000,
+        },
+        successCase: {
+          productName: "북유럽 우드 수납장",
+          category: "가구",
+          revenue: "월 2,800만원",
+          period: "3개월",
+          channels: 5,
+          engagement: "8.4%",
+        },
+        topKeywords: [
+          { rank: 1, keyword: "북유럽인테리어", count: "1위", trend: "up" },
+          { rank: 2, keyword: "원목선반", count: "3위", trend: "up" },
+          { rank: 3, keyword: "수납선반", count: "8위", trend: "stable" },
+          { rank: 4, keyword: "인테리어소품", count: "12위", trend: "down" },
+          { rank: 5, keyword: "벽선반", count: "15위", trend: "stable" },
         ],
-        platforms: [
+        channels: [
           {
-            name: "Instagram",
-            score: 92,
-            followers: "평균 5.2K",
-            engagementRate: "6.8%",
-            bestContentType: "이미지 & 릴스",
-            reason: "높은 시각적 콘텐츠 선호도, 젊은 타겟층 활발",
-            icon: Instagram,
-            color: "#E4405F",
+            name: "맘스홀릭베이비",
+            score: 94,
+            members: "48,520명",
+            activityLevel: "매우 높음",
+            cost: "무료",
+            contentType: "후기형",
+            reason: "육아 인테리어 콘텐츠 활발, 수납 관심도 높음",
+            rating: "A+",
+            logo: "👶",
+            pricing: {
+              review: 150000,
+              question: 120000,
+              hotdeal: 100000
+            },
+            successRate: 87,
           },
           {
-            name: "TikTok",
-            score: 87,
-            followers: "평균 8.1K",
-            engagementRate: "8.4%",
-            bestContentType: "숏폼 비디오",
-            reason: "바이럴 확산 가능성 높음, Z세대 타겟",
-            icon: Target,
-            color: "#000000",
+            name: "베베하우스",
+            score: 89,
+            members: "32,100명",
+            activityLevel: "높음",
+            cost: "무료",
+            contentType: "질문형",
+            reason: "실용적 가구 Q&A 활발, 구매력 높은 회원층",
+            rating: "A",
+            logo: "🏠",
+            pricing: {
+              review: 140000,
+              question: 110000,
+              hotdeal: 95000
+            },
+            successRate: 82,
           },
           {
-            name: "Facebook",
-            score: 74,
-            followers: "평균 3.5K",
-            engagementRate: "4.2%",
-            bestContentType: "이미지 & 텍스트",
-            reason: "광범위한 연령층, 커뮤니티 형성 유리",
-            icon: Facebook,
-            color: "#1877F2",
+            name: "우리아이맘",
+            score: 85,
+            members: "28,400명",
+            activityLevel: "높음",
+            cost: "5,000원",
+            contentType: "핫딜형",
+            reason: "가성비 제품 선호, 할인 정보 공유 활발",
+            rating: "A",
+            logo: "💝",
+            pricing: {
+              review: 130000,
+              question: 100000,
+              hotdeal: 85000
+            },
+            successRate: 79,
           },
           {
-            name: "YouTube",
-            score: 68,
-            followers: "평균 12.4K",
-            engagementRate: "5.1%",
-            bestContentType: "롱폼 비디오",
-            reason: "상세한 제품 리뷰 & 튜토리얼 적합",
-            icon: Youtube,
-            color: "#FF0000",
+            name: "송파맘카페",
+            score: 82,
+            members: "25,100명",
+            activityLevel: "높음",
+            cost: "무료",
+            contentType: "후기형",
+            reason: "지역 밀착형, 실제 사용 후기 선호",
+            rating: "B+",
+            logo: "🌸",
+            pricing: {
+              review: 120000,
+              question: 95000,
+              hotdeal: 80000
+            },
+            successRate: 75,
           },
           {
-            name: "Twitter",
-            score: 62,
-            followers: "평균 2.8K",
-            engagementRate: "3.9%",
-            bestContentType: "텍스트 & 이미지",
-            reason: "실시간 반응 및 트렌드 참여 가능",
-            icon: Twitter,
-            color: "#1DA1F2",
+            name: "대치동맘모임",
+            score: 79,
+            members: "22,800명",
+            activityLevel: "보통",
+            cost: "무료",
+            contentType: "질문형",
+            reason: "교육 관심도 높은 학부모 타겟",
+            rating: "B+",
+            logo: "📚",
+            pricing: {
+              review: 115000,
+              question: 90000,
+              hotdeal: 75000
+            },
+            successRate: 72,
           },
         ],
-        contentAnalysis: {
-          tone: "긍정적, 활기찬",
-          visualStyle: "밝고 생동감 있는 색상",
-          copyLength: "중간 (80-120자 권장)",
-          callToAction: "명확함",
-        },
+        contentSamples: [
+          {
+            type: "후기형",
+            title: "아이방 정리의 완성! 북유럽 원목 선반 후기",
+            preview: "안녕하세요 맘님들~ 오늘은 제가 아이방에 설치한 북유럽 스타일 선반 소개해드려요! 조립도 쉽고 수납력도 좋아서 정말 만족스러워요 💕",
+          },
+          {
+            type: "질문형",
+            title: "아이방 수납 선반 추천 부탁드려요!",
+            preview: "안녕하세요~ 6살 아이 방에 책이랑 장난감 정리할 선반 찾고 있는데요, 튼튼하고 디자인 예쁜 거 추천해주실 수 있을까요?",
+          },
+          {
+            type: "핫딜형",
+            title: "🔥 북유럽 원목 선반 타임특가 30% 할인!",
+            preview: "맘님들! 제가 쓰는 선반이 오늘 하루만 특가래요! 평소 5만원대인데 지금 35,000원! 링크 남겨드릴게요~",
+          },
+        ],
         timing: {
-          bestTimes: ["오전 10-12시", "오후 6-8시", "오후 9-11시"],
-          bestDays: ["수요일", "목요일", "금요일", "일요일"],
+          bestTimes: ["오전 10-11시", "오후 2-3시", "오후 8-10시"],
+          bestDays: ["월요일", "수요일", "금요일"],
         },
         insights: {
-          viralPotential: "높음",
-          contentQuality: "우수",
-          targetRelevance: "매우 적합",
-          expectedReach: "약 15K-25K",
-          estimatedEngagement: "6.5-8.2%",
+          competitionLevel: "중간",
+          seasonality: "사계절",
+          expectedReach: "약 5,000-8,000명",
+          estimatedEngagement: "4.2-5.8%",
         },
-        recommendations: [
-          "해시태그 5-10개 사용으로 도달률 극대화",
-          "릴스 형태로 재편집하여 추가 업로드 권장",
-          "스토리에서 투표/질문 기능 활용",
-          "인플루언서 협업으로 확산 가능성 증대",
-        ],
       };
       
       setAnalysisResult(mockResult);
       setIsAnalyzing(false);
       toast.success("분석이 완료되었습니다!");
-    }, 2000);
+    }, 2500);
   };
 
-  const performanceData = analysisResult ? [
-    { name: '좋아요', value: analysisResult.performance.likes, color: '#E4405F' },
-    { name: '댓글', value: analysisResult.performance.comments, color: '#1877F2' },
-    { name: '공유', value: analysisResult.performance.shares, color: '#34D399' },
-  ] : [];
+  const toggleChannelSelection = (index: number) => {
+    const newSelection = new Set(selectedChannels);
+    if (newSelection.has(index)) {
+      newSelection.delete(index);
+    } else {
+      newSelection.add(index);
+    }
+    setSelectedChannels(newSelection);
+  };
+
+  const calculateTotal = () => {
+    if (!analysisResult) return 0;
+    let total = 0;
+    selectedChannels.forEach(index => {
+      const channel = analysisResult.channels[index];
+      const typeKey = channel.contentType === "후기형" ? "review" : 
+                     channel.contentType === "질문형" ? "question" : "hotdeal";
+      total += channel.pricing[typeKey];
+    });
+    return total;
+  };
+
+  const handleProceedToPayment = () => {
+    if (selectedChannels.size === 0) {
+      toast.error("최소 1개 이상의 채널을 선택해주세요");
+      return;
+    }
+
+    const finalAmount = selectedChannels.size > 1 
+      ? Math.floor(calculateTotal() * 0.9) 
+      : calculateTotal();
+
+    toast.success(`${selectedChannels.size}개 채널 선택 완료 - ${finalAmount.toLocaleString()}원`);
+  };
+
+  const successRateData = analysisResult?.channels.map((ch: ChannelRecommendation) => ({
+    name: ch.name.slice(0, 8),
+    rate: ch.successRate,
+  })) || [];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">콘텐츠 분석</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">링크 분석</h1>
         <p className="text-muted-foreground">
-          소셜 미디어 콘텐츠 URL을 입력하면 AI가 성과를 분석하고 최적의 플랫폼과 전략을 추천합니다
+          상품 URL을 입력하면 AI가 최적의 맘카페 채널과 마케팅 전략을 추천합니다
         </p>
       </div>
 
       {/* URL 입력 섹션 */}
       <Card>
         <CardHeader>
-          <CardTitle>콘텐츠 URL 입력</CardTitle>
+          <CardTitle>상품 URL 입력</CardTitle>
           <CardDescription>
-            Instagram, Facebook, TikTok, YouTube 등 소셜 미디어 게시물 링크를 입력하세요
+            쿠팡, 네이버 스마트스토어, 자사몰 등 상품 링크를 입력하세요
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="url">콘텐츠 URL</Label>
+            <Label htmlFor="url">상품 URL</Label>
             <div className="flex space-x-2">
               <div className="relative flex-1">
                 <LinkIcon className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input
                   id="url"
                   type="url"
-                  placeholder="https://instagram.com/p/..."
-                  value={contentUrl}
-                  onChange={(e) => setContentUrl(e.target.value)}
+                  placeholder="https://..."
+                  value={productUrl}
+                  onChange={(e) => setProductUrl(e.target.value)}
                   className="pl-10"
                   disabled={isAnalyzing}
                 />
@@ -220,10 +321,13 @@ const Analyze = () => {
                 {isAnalyzing ? (
                   <>
                     <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    분석 중...
+                    AI 분석 중...
                   </>
                 ) : (
-                  "분석 시작"
+                  <>
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    분석 시작
+                  </>
                 )}
               </Button>
             </div>
@@ -232,7 +336,7 @@ const Analyze = () => {
           <div className="flex items-start space-x-2 text-sm text-muted-foreground">
             <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
             <p>
-              경쟁사 콘텐츠, 트렌딩 포스트, 인플루언서 게시물 등 다양한 소셜 미디어 URL을 지원합니다
+              쿠팡, 네이버 스마트스토어, 11번가, 자사몰 등 다양한 쇼핑몰 URL을 지원합니다
             </p>
           </div>
         </CardContent>
@@ -241,301 +345,489 @@ const Analyze = () => {
       {/* 분석 결과 */}
       {analysisResult && (
         <div className="space-y-6 animate-fade-in">
-          {/* 콘텐츠 정보 + 성과 지표 */}
+          {/* 상품 정보 + 종합 평가 + ROI */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* 콘텐츠 정보 */}
-            <Card className="lg:col-span-2">
+            {/* 상품 정보 */}
+            <Card>
               <CardHeader>
-                <CardTitle>콘텐츠 분석 결과</CardTitle>
+                <CardTitle>상품 분석</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="mb-6">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="outline">{analysisResult.content.platform}</Badge>
-                    <Badge variant="outline">{analysisResult.content.type}</Badge>
-                    <Badge variant="outline">{analysisResult.content.category}</Badge>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <Badge variant="outline">{analysisResult.product.category}</Badge>
+                    </div>
+                    <h3 className="text-lg font-bold mb-2">{analysisResult.product.name}</h3>
                   </div>
-                  <h3 className="text-xl font-bold mb-2">{analysisResult.content.title}</h3>
-                </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="flex items-center gap-3">
-                    <Heart className="h-5 w-5 text-rose-500" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">좋아요</p>
-                      <p className="font-semibold">{analysisResult.performance.likes.toLocaleString()}</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">가격대</span>
+                      <span className="font-semibold">{analysisResult.product.priceRange}</span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <MessageCircle className="h-5 w-5 text-blue-500" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">댓글</p>
-                      <p className="font-semibold">{analysisResult.performance.comments.toLocaleString()}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Share2 className="h-5 w-5 text-emerald-500" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">공유</p>
-                      <p className="font-semibold">{analysisResult.performance.shares.toLocaleString()}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Eye className="h-5 w-5 text-amber-500" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">조회수</p>
-                      <p className="font-semibold">{analysisResult.performance.views.toLocaleString()}</p>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-muted-foreground">리뷰 수</span>
+                      <span className="font-semibold">{analysisResult.reviewAnalysis.totalReviews}건</span>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* 참여율 & 바이럴 점수 */}
+            {/* 종합 평가 */}
             <Card>
               <CardHeader>
-                <CardTitle>성과 지표</CardTitle>
+                <CardTitle>종합 평가</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">참여율</span>
-                      <span className="text-2xl font-bold text-accent">
-                        {analysisResult.performance.engagementRate}%
-                      </span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-accent rounded-full transition-all"
-                        style={{ width: `${analysisResult.performance.engagementRate * 10}%` }}
-                      />
+                <div className="flex flex-col items-center">
+                  <div className="relative w-32 h-32 mb-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { value: analysisResult.overallScore },
+                            { value: 100 - analysisResult.overallScore }
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          startAngle={180}
+                          endAngle={0}
+                          innerRadius={45}
+                          outerRadius={60}
+                          dataKey="value"
+                        >
+                          <Cell fill="hsl(var(--accent))" />
+                          <Cell fill="hsl(var(--muted))" />
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="text-2xl font-bold text-accent">{analysisResult.scoreLevel}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {analysisResult.overallScore}점
+                      </div>
                     </div>
                   </div>
-                  
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">바이럴 점수</span>
-                      <span className="text-2xl font-bold text-primary">
-                        {analysisResult.performance.viralScore}
-                      </span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-primary rounded-full transition-all"
-                        style={{ width: `${analysisResult.performance.viralScore}%` }}
-                      />
-                    </div>
+                  <Badge variant="secondary" className="text-sm">
+                    맘카페 마케팅 적합도
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 예상 ROI */}
+            <Card className="bg-gradient-to-br from-accent/5 to-primary/5 border-accent">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <DollarSign className="h-5 w-5 mr-2 text-accent" />
+                  예상 ROI
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <div className="text-sm text-muted-foreground mb-1">투자 금액</div>
+                  <div className="text-xl font-bold">
+                    {analysisResult.roi.estimatedInvestment.toLocaleString()}원
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground mb-1">예상 매출</div>
+                  <div className="text-xl font-bold text-accent">
+                    {analysisResult.roi.expectedRevenue.toLocaleString()}원
+                  </div>
+                </div>
+                <div className="pt-3 border-t">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-accent">{analysisResult.roi.roi}%</span>
+                    <span className="text-sm text-muted-foreground">ROI</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    손익분기 {analysisResult.roi.breakEven}
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* 참여 분포 & 타겟 오디언스 */}
+          {/* 경쟁사 분석 + 성공 사례 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 참여 분포 */}
+            {/* 경쟁사 분석 */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  참여 분포
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#8884d8">
-                      {performanceData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* 타겟 오디언스 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="h-5 w-5 mr-2" />
-                  타겟 오디언스
+                  <Target className="h-5 w-5 mr-2" />
+                  경쟁사 분석
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">주요 연령대</p>
-                  <p className="font-semibold">{analysisResult.audience.primaryAge}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">성별 분포</p>
-                  <p className="font-semibold">{analysisResult.audience.gender}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">주요 지역</p>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {analysisResult.audience.topLocations.map((location: string, idx: number) => (
-                      <Badge key={idx} variant="secondary">{location}</Badge>
-                    ))}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <div className="text-sm text-muted-foreground mb-1">시장 점유율</div>
+                    <div className="text-2xl font-bold">{analysisResult.competitor.marketShare}%</div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <div className="text-sm text-muted-foreground mb-1">경쟁 수준</div>
+                    <Badge variant="secondary">{analysisResult.competitor.competitionLevel}</Badge>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">관심사</p>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {analysisResult.audience.interests.map((interest: string, idx: number) => (
-                      <Badge key={idx} variant="outline">{interest}</Badge>
+                  <div className="text-sm text-muted-foreground mb-2">가격 경쟁력</div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-accent">{analysisResult.competitor.pricePosition}</Badge>
+                    <span className="text-sm">
+                      경쟁사 평균: {analysisResult.competitor.avgPrice.toLocaleString()}원
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground mb-2">주요 경쟁 브랜드</div>
+                  <div className="flex flex-wrap gap-2">
+                    {analysisResult.competitor.topBrands.map((brand: string, idx: number) => (
+                      <Badge key={idx} variant="outline">{brand}</Badge>
                     ))}
                   </div>
                 </div>
               </CardContent>
             </Card>
+
+            {/* 성공 사례 */}
+            <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Award className="h-5 w-5 mr-2 text-primary" />
+                  유사 상품 성공 사례
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <div className="text-sm text-muted-foreground mb-1">상품명</div>
+                  <div className="font-semibold">{analysisResult.successCase.productName}</div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">기간</div>
+                    <div className="font-bold">{analysisResult.successCase.period}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">채널 수</div>
+                    <div className="font-bold">{analysisResult.successCase.channels}개</div>
+                  </div>
+                </div>
+                <div className="pt-3 border-t">
+                  <div className="text-sm text-muted-foreground mb-1">총 매출</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {analysisResult.successCase.revenue}
+                  </div>
+                </div>
+                <Badge className="w-full justify-center bg-primary">
+                  참여율 {analysisResult.successCase.engagement}
+                </Badge>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* 해시태그 분석 */}
-          <Card>
+          {/* 키워드 트렌드 + 리뷰 분석 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 실시간 키워드 트렌드 */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Zap className="h-5 w-5 mr-2 text-amber-500" />
+                  실시간 키워드 트렌드
+                </CardTitle>
+                <CardDescription>
+                  상위 노출되고 있는 키워드 Top 5
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {analysisResult.topKeywords.map((item: any, idx: number) => (
+                    <div key={idx} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary" className="w-8 h-8 flex items-center justify-center">
+                          {item.rank}
+                        </Badge>
+                        <div>
+                          <span className="font-semibold">{item.keyword}</span>
+                          <div className="flex items-center gap-1 mt-1">
+                            <Badge variant="outline" className="text-xs">{item.count}</Badge>
+                            {item.trend === "up" && <TrendingUp className="h-3 w-3 text-emerald-500" />}
+                            {item.trend === "down" && <TrendingDown className="h-3 w-3 text-rose-500" />}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 리뷰 분석 */}
+            <Card>
+              <CardHeader>
+                <CardTitle>리뷰 분석</CardTitle>
+                <CardDescription>
+                  총 {analysisResult.reviewAnalysis.totalReviews}개 리뷰 분석 결과
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <ThumbsUp className="h-4 w-4 text-emerald-500" />
+                    <span className="font-semibold text-emerald-600">긍정 리뷰</span>
+                    <Badge variant="secondary">{analysisResult.reviewAnalysis.positiveCount}건</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {analysisResult.reviewAnalysis.positiveReviews[0]}
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <ThumbsDown className="h-4 w-4 text-rose-500" />
+                    <span className="font-semibold text-rose-600">부정 리뷰</span>
+                    <Badge variant="secondary">{analysisResult.reviewAnalysis.negativeCount}건</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {analysisResult.reviewAnalysis.negativeReviews[0]}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* AI 생성 콘텐츠 샘플 */}
+          <Card className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Hash className="h-5 w-5 mr-2" />
-                추천 해시태그
+                <Sparkles className="h-5 w-5 mr-2 text-primary" />
+                AI 생성 콘텐츠 샘플
               </CardTitle>
               <CardDescription>
-                이 콘텐츠에 효과적인 해시태그 Top 5
+                각 채널 유형에 맞춰 AI가 자동 생성한 게시글 예시
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {analysisResult.hashtags.map((item: any, idx: number) => (
-                  <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary" className="w-8 h-8 flex items-center justify-center">
-                        {idx + 1}
-                      </Badge>
-                      <span className="font-semibold text-lg">{item.tag}</span>
-                      <Badge variant="outline" className="text-xs">{item.posts} 게시물</Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-right mr-3">
-                        <div className="text-xs text-muted-foreground">성과 점수</div>
-                        <div className="font-bold text-accent">{item.performance}점</div>
-                      </div>
-                      <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-accent rounded-full transition-all"
-                          style={{ width: `${item.performance}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {analysisResult.contentSamples.map((sample: any, idx: number) => (
+                  <Card key={idx} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <Badge className="w-fit mb-2">{sample.type}</Badge>
+                      <CardTitle className="text-sm">{sample.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">{sample.preview}</p>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* 추천 플랫폼 */}
+          {/* 채널별 성공률 차트 */}
           <Card>
             <CardHeader>
-              <CardTitle>추천 소셜 미디어 플랫폼 (Top 5)</CardTitle>
+              <CardTitle className="flex items-center">
+                <BarChart3 className="h-5 w-5 mr-2" />
+                채널별 성공률
+              </CardTitle>
+              <CardDescription>최근 3개월 캠페인 성공률</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={successRateData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <RechartsTooltip />
+                  <Bar dataKey="rate" fill="hsl(var(--accent))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* 추천 채널 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>브랜드 맞춤 추천 맘카페 (Top 5)</CardTitle>
               <CardDescription>
-                AI가 분석한 이 콘텐츠에 가장 효과적인 플랫폼 순위
+                AI가 분석한 가장 효과적인 맘카페 채널 순위입니다
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {analysisResult.platforms.map((platform: PlatformRecommendation, idx: number) => (
+              {analysisResult.channels.map((channel: ChannelRecommendation, idx: number) => (
                 <Card 
                   key={idx} 
-                  className="border-2 hover:border-accent/50 transition-all"
+                  className={`border-2 transition-all cursor-pointer ${
+                    selectedChannels.has(idx)
+                      ? 'border-accent bg-accent/5 shadow-lg'
+                      : 'border-border hover:border-accent/50'
+                  }`}
+                  onClick={() => toggleChannelSelection(idx)}
                 >
                   <CardContent className="pt-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div 
-                          className="w-12 h-12 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: `${platform.color}15` }}
-                        >
-                          <platform.icon 
-                            className="h-6 w-6" 
-                            style={{ color: platform.color }}
-                          />
+                        <div className="text-4xl">
+                          {channel.logo}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-bold">{platform.name}</h3>
+                            <h3 className="text-lg font-bold">{channel.name}</h3>
+                            {selectedChannels.has(idx) && (
+                              <Badge className="bg-accent">선택됨 ✓</Badge>
+                            )}
                             {idx === 0 && (
-                              <Badge className="bg-accent">최고 추천</Badge>
+                              <Badge className="bg-primary">최고 추천</Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{platform.reason}</p>
+                          <p className="text-sm text-muted-foreground">{channel.reason}</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-accent">{platform.score}점</div>
-                        <div className="text-xs text-muted-foreground">매칭 점수</div>
+                      <div className="flex flex-col items-end space-y-1">
+                        <Badge variant="secondary" className="text-lg font-bold">
+                          {channel.rating}
+                        </Badge>
+                        <div className="flex items-center text-accent">
+                          <Star className="h-4 w-4 mr-1 fill-current" />
+                          <span className="text-sm font-semibold">{channel.score}점</span>
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">평균 팔로워</p>
-                        <p className="font-semibold">{platform.followers}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">회원수</p>
+                          <p className="font-semibold">{channel.members}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">참여율</p>
-                        <p className="font-semibold">{platform.engagementRate}</p>
+                      <div className="flex items-center space-x-2">
+                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">활성도</p>
+                          <p className="font-semibold">{channel.activityLevel}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">추천 콘텐츠</p>
-                        <p className="font-semibold">{platform.bestContentType}</p>
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">게시 비용</p>
+                          <p className="font-semibold">{channel.cost}</p>
+                        </div>
                       </div>
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle2 className="h-4 w-4 text-accent" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">성공률</p>
+                          <p className="font-semibold text-accent">{channel.successRate}%</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 가격 견적 */}
+                    <div className="pt-4 border-t border-border">
+                      <p className="text-sm font-semibold mb-3">콘텐츠 타입별 견적</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className={`p-3 rounded-lg text-center transition-all ${
+                          channel.contentType === "후기형" 
+                            ? 'bg-accent text-accent-foreground' 
+                            : 'bg-muted'
+                        }`}>
+                          <div className="text-xs mb-1">후기형</div>
+                          <div className="font-bold">{channel.pricing.review.toLocaleString()}원</div>
+                        </div>
+                        <div className={`p-3 rounded-lg text-center transition-all ${
+                          channel.contentType === "질문형" 
+                            ? 'bg-accent text-accent-foreground' 
+                            : 'bg-muted'
+                        }`}>
+                          <div className="text-xs mb-1">질문형</div>
+                          <div className="font-bold">{channel.pricing.question.toLocaleString()}원</div>
+                        </div>
+                        <div className={`p-3 rounded-lg text-center transition-all ${
+                          channel.contentType === "핫딜형" 
+                            ? 'bg-accent text-accent-foreground' 
+                            : 'bg-muted'
+                        }`}>
+                          <div className="text-xs mb-1">핫딜형</div>
+                          <div className="font-bold">{channel.pricing.hotdeal.toLocaleString()}원</div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">
+                        현재 추천: <span className="font-semibold text-accent">{channel.contentType}</span>
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
               ))}
+
+              {/* 결제 요약 */}
+              {selectedChannels.size > 0 && (
+                <Card className="border-2 border-accent bg-gradient-to-r from-accent/5 to-primary/5">
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-2">선택한 채널 요약</h3>
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                          <span>선택된 채널: <span className="font-bold text-accent">{selectedChannels.size}개</span></span>
+                          {selectedChannels.size > 1 && (
+                            <>
+                              <span>•</span>
+                              <span className="text-accent font-semibold">
+                                패키지 할인 10% 적용 🎉
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <div className="text-sm text-muted-foreground">총 견적</div>
+                          {selectedChannels.size > 1 && (
+                            <div className="text-sm text-muted-foreground line-through">
+                              {calculateTotal().toLocaleString()}원
+                            </div>
+                          )}
+                          <div className="text-3xl font-bold text-accent">
+                            {selectedChannels.size > 1 
+                              ? Math.floor(calculateTotal() * 0.9).toLocaleString()
+                              : calculateTotal().toLocaleString()
+                            }원
+                          </div>
+                        </div>
+                        
+                        <Button 
+                          size="lg" 
+                          className="h-16 px-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProceedToPayment();
+                          }}
+                        >
+                          다음 단계로
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </CardContent>
           </Card>
 
-          {/* 콘텐츠 분석 & 최적 발행 시간 */}
+          {/* 최적 발행 시간 + 예상 성과 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 콘텐츠 분석 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  콘텐츠 분석
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">톤 & 분위기</span>
-                  <span className="font-semibold">{analysisResult.contentAnalysis.tone}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">비주얼 스타일</span>
-                  <span className="font-semibold">{analysisResult.contentAnalysis.visualStyle}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">카피 길이</span>
-                  <span className="font-semibold">{analysisResult.contentAnalysis.copyLength}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">CTA</span>
-                  <Badge variant="secondary">{analysisResult.contentAnalysis.callToAction}</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 최적 발행 시간 */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Clock className="h-5 w-5 mr-2" />
                   최적 발행 시간
                 </CardTitle>
-                <CardDescription>플랫폼 활동 패턴 기반 추천</CardDescription>
+                <CardDescription>채널별 활동 패턴 기반 추천</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -562,58 +854,69 @@ const Analyze = () => {
                 </div>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2" />
+                  예상 성과
+                </CardTitle>
+                <CardDescription>AI 분석 기반 예측</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">경쟁 수준</span>
+                    <Badge variant="secondary">{analysisResult.insights.competitionLevel}</Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">시즌성</span>
+                    <span className="font-semibold">{analysisResult.insights.seasonality}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">예상 도달 범위</span>
+                    <span className="font-semibold">{analysisResult.insights.expectedReach}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">예상 참여율</span>
+                    <span className="font-semibold text-accent">
+                      {analysisResult.insights.estimatedEngagement}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* 예상 성과 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2" />
-                예상 성과
-              </CardTitle>
-              <CardDescription>AI 분석 기반 예측</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-sm text-muted-foreground mb-1">바이럴 가능성</p>
-                  <p className="text-lg font-bold text-accent">{analysisResult.insights.viralPotential}</p>
-                </div>
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-sm text-muted-foreground mb-1">콘텐츠 품질</p>
-                  <p className="text-lg font-bold">{analysisResult.insights.contentQuality}</p>
-                </div>
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-sm text-muted-foreground mb-1">예상 도달</p>
-                  <p className="text-lg font-bold">{analysisResult.insights.expectedReach}</p>
-                </div>
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-sm text-muted-foreground mb-1">예상 참여율</p>
-                  <p className="text-lg font-bold text-accent">{analysisResult.insights.estimatedEngagement}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* AI 추천사항 */}
+          {/* 결제 후 프로세스 */}
           <Card className="bg-gradient-card">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Lightbulb className="h-5 w-5 mr-2 text-amber-500" />
-                AI 추천사항
-              </CardTitle>
-              <CardDescription>성과 향상을 위한 맞춤 제안</CardDescription>
+              <CardTitle>결제 후 진행 과정</CardTitle>
+              <CardDescription>자동화된 워크플로우로 빠르게 캠페인을 시작하세요</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {analysisResult.recommendations.map((rec: string, idx: number) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-background/50">
-                    <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-bold text-accent-foreground">{idx + 1}</span>
-                    </div>
-                    <p className="text-sm">{rec}</p>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-col items-center text-center p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <FileText className="h-10 w-10 text-accent mb-3" />
+                  <span className="font-semibold mb-1">1. 콘텐츠 자동 생성</span>
+                  <span className="text-xs text-muted-foreground">
+                    AI가 각 채널에 최적화된 맞춤 게시글 작성
+                  </span>
+                </div>
+                <div className="flex flex-col items-center text-center p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <Calendar className="h-10 w-10 text-accent mb-3" />
+                  <span className="font-semibold mb-1">2. 자동 스케줄링</span>
+                  <span className="text-xs text-muted-foreground">
+                    최적 시간대에 자동으로 게시 예약
+                  </span>
+                </div>
+                <div className="flex flex-col items-center text-center p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <TrendingUp className="h-10 w-10 text-accent mb-3" />
+                  <span className="font-semibold mb-1">3. 실시간 성과 분석</span>
+                  <span className="text-xs text-muted-foreground">
+                    대시보드에서 캠페인 성과 모니터링
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
