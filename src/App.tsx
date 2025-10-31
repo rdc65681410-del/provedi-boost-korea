@@ -9,6 +9,7 @@ import AppLayout from "./pages/App";
 import Dashboard from "./pages/app/Dashboard";
 import Analyze from "./pages/app/Analyze";
 import ContentGenerate from "./pages/app/ContentGenerate";
+import Channels from "./pages/app/Channels";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,7 +27,7 @@ const App = () => (
             <Route index element={<Dashboard />} />
             <Route path="analyze" element={<Analyze />} />
             <Route path="generate" element={<ContentGenerate />} />
-            <Route path="channels" element={<Dashboard />} />
+            <Route path="channels" element={<Channels />} />
             <Route path="content" element={<Dashboard />} />
             <Route path="timing" element={<Dashboard />} />
             <Route path="packages" element={<Dashboard />} />
