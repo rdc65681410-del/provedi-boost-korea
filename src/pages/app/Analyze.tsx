@@ -13,7 +13,10 @@ import {
   Clock,
   AlertCircle,
   CheckCircle2,
-  Loader2
+  Loader2,
+  FileText,
+  Calendar,
+  CreditCard
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -26,12 +29,19 @@ interface ChannelRecommendation {
   contentType: string;
   reason: string;
   rating: string;
+  logo: string;
+  pricing: {
+    review: number;
+    question: number;
+    hotdeal: number;
+  };
 }
 
 const Analyze = () => {
   const [productUrl, setProductUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [selectedChannels, setSelectedChannels] = useState<Set<number>>(new Set());
 
   const handleAnalyze = async () => {
     if (!productUrl) {
@@ -68,6 +78,12 @@ const Analyze = () => {
             contentType: "후기형",
             reason: "육아 인테리어 콘텐츠 활발, 수납 관심도 높음",
             rating: "A+",
+            logo: "👶",
+            pricing: {
+              review: 150000,
+              question: 120000,
+              hotdeal: 100000
+            }
           },
           {
             name: "베베하우스",
@@ -78,6 +94,12 @@ const Analyze = () => {
             contentType: "질문형",
             reason: "실용적 가구 Q&A 활발, 구매력 높은 회원층",
             rating: "A",
+            logo: "🏠",
+            pricing: {
+              review: 140000,
+              question: 110000,
+              hotdeal: 95000
+            }
           },
           {
             name: "우리아이맘",
@@ -88,6 +110,12 @@ const Analyze = () => {
             contentType: "핫딜형",
             reason: "가성비 제품 선호, 할인 정보 공유 활발",
             rating: "A",
+            logo: "💝",
+            pricing: {
+              review: 130000,
+              question: 100000,
+              hotdeal: 85000
+            }
           },
         ],
         timing: {
@@ -106,6 +134,43 @@ const Analyze = () => {
       setIsAnalyzing(false);
       toast.success("분석이 완료되었습니다!");
     }, 2000);
+  };
+
+  const toggleChannelSelection = (index: number) => {
+    const newSelection = new Set(selectedChannels);
+    if (newSelection.has(index)) {
+      newSelection.delete(index);
+    } else {
+      newSelection.add(index);
+    }
+    setSelectedChannels(newSelection);
+  };
+
+  const calculateTotal = () => {
+    if (!analysisResult) return 0;
+    let total = 0;
+    selectedChannels.forEach(index => {
+      const channel = analysisResult.channels[index];
+      const typeKey = channel.contentType === "후기형" ? "review" : 
+                     channel.contentType === "질문형" ? "question" : "hotdeal";
+      total += channel.pricing[typeKey];
+    });
+    return total;
+  };
+
+  const handleProceedToPayment = () => {
+    if (selectedChannels.size === 0) {
+      toast.error("최소 1개 이상의 채널을 선택해주세요");
+      return;
+    }
+
+    const finalAmount = selectedChannels.size > 1 
+      ? Math.floor(calculateTotal() * 0.9) 
+      : calculateTotal();
+
+    toast.success(`${selectedChannels.size}개 채널 결제 진행 - ${finalAmount.toLocaleString()}원`);
+    // 실제 결제 페이지로 이동
+    // navigate("/app/payment", { state: { selectedChannels, total: finalAmount } });
   };
 
   return (
@@ -214,15 +279,28 @@ const Analyze = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {analysisResult.channels.map((channel: ChannelRecommendation, idx: number) => (
-                <Card key={idx} className="border-border">
+                <Card 
+                  key={idx} 
+                  className={`border-2 transition-all cursor-pointer ${
+                    selectedChannels.has(idx)
+                      ? 'border-accent bg-accent/5 shadow-lg'
+                      : 'border-border hover:border-accent/50'
+                  }`}
+                  onClick={() => toggleChannelSelection(idx)}
+                >
                   <CardContent className="pt-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground font-bold">
-                          {idx + 1}
+                        <div className="text-4xl">
+                          {channel.logo}
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold">{channel.name}</h3>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-lg font-bold">{channel.name}</h3>
+                            {selectedChannels.has(idx) && (
+                              <Badge className="bg-accent">선택됨 ✓</Badge>
+                            )}
+                          </div>
                           <p className="text-sm text-muted-foreground">{channel.reason}</p>
                         </div>
                       </div>
@@ -266,15 +344,97 @@ const Analyze = () => {
                           <Badge variant="outline" className="mt-1">{channel.contentType}</Badge>
                         </div>
                       </div>
-                      <div className="col-span-2 md:col-span-1">
-                        <Button variant="outline" size="sm" className="w-full">
-                          콘텐츠 생성
+                    </div>
+
+                    {/* 가격 견적 테이블 */}
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <p className="text-sm font-semibold mb-3">콘텐츠 타입별 견적</p>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className={`p-3 rounded-lg text-center transition-all ${
+                          channel.contentType === "후기형" 
+                            ? 'bg-accent text-accent-foreground' 
+                            : 'bg-muted'
+                        }`}>
+                          <div className="text-xs mb-1">후기형</div>
+                          <div className="font-bold">{channel.pricing.review.toLocaleString()}원</div>
+                        </div>
+                        <div className={`p-3 rounded-lg text-center transition-all ${
+                          channel.contentType === "질문형" 
+                            ? 'bg-accent text-accent-foreground' 
+                            : 'bg-muted'
+                        }`}>
+                          <div className="text-xs mb-1">질문형</div>
+                          <div className="font-bold">{channel.pricing.question.toLocaleString()}원</div>
+                        </div>
+                        <div className={`p-3 rounded-lg text-center transition-all ${
+                          channel.contentType === "핫딜형" 
+                            ? 'bg-accent text-accent-foreground' 
+                            : 'bg-muted'
+                        }`}>
+                          <div className="text-xs mb-1">핫딜형</div>
+                          <div className="font-bold">{channel.pricing.hotdeal.toLocaleString()}원</div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">
+                        현재 추천: <span className="font-semibold text-accent">{channel.contentType}</span>
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {/* 결제 요약 */}
+              {selectedChannels.size > 0 && (
+                <Card className="border-2 border-accent bg-gradient-card">
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-2">선택한 채널 요약</h3>
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                          <span>선택된 채널: <span className="font-bold text-accent">{selectedChannels.size}개</span></span>
+                          {selectedChannels.size > 1 && (
+                            <>
+                              <span>•</span>
+                              <span className="text-accent font-semibold">
+                                패키지 할인 10% 적용 🎉
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <div className="text-sm text-muted-foreground">총 견적</div>
+                          {selectedChannels.size > 1 && (
+                            <div className="text-sm text-muted-foreground line-through">
+                              {calculateTotal().toLocaleString()}원
+                            </div>
+                          )}
+                          <div className="text-3xl font-bold text-accent">
+                            {selectedChannels.size > 1 
+                              ? Math.floor(calculateTotal() * 0.9).toLocaleString()
+                              : calculateTotal().toLocaleString()
+                            }원
+                          </div>
+                        </div>
+                        
+                        <Button 
+                          size="lg" 
+                          className="h-16 px-8 bg-accent hover:bg-accent/90"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProceedToPayment();
+                          }}
+                        >
+                          <CreditCard className="mr-2 h-5 w-5" />
+                          결제하기
                         </Button>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              )}
             </CardContent>
           </Card>
 
@@ -347,35 +507,35 @@ const Analyze = () => {
             </Card>
           </div>
 
-          {/* 다음 단계 */}
+          {/* 결제 후 프로세스 안내 */}
           <Card className="bg-gradient-card">
             <CardHeader>
-              <CardTitle>다음 단계</CardTitle>
-              <CardDescription>분석 결과를 활용하여 캠페인을 시작하세요</CardDescription>
+              <CardTitle>결제 후 진행 과정</CardTitle>
+              <CardDescription>자동화된 워크플로우로 빠르게 캠페인을 시작하세요</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button variant="outline" size="lg" className="h-auto py-4 flex-col items-start">
-                  <CheckCircle2 className="h-5 w-5 mb-2" />
-                  <span className="font-semibold">콘텐츠 자동 생성</span>
-                  <span className="text-xs text-muted-foreground mt-1">
-                    AI가 각 채널에 최적화된 게시글 작성
+                <div className="flex flex-col items-center text-center p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <FileText className="h-10 w-10 text-accent mb-3" />
+                  <span className="font-semibold mb-1">1. 콘텐츠 자동 생성</span>
+                  <span className="text-xs text-muted-foreground">
+                    AI가 각 채널에 최적화된 맞춤 게시글 작성
                   </span>
-                </Button>
-                <Button variant="outline" size="lg" className="h-auto py-4 flex-col items-start">
-                  <Clock className="h-5 w-5 mb-2" />
-                  <span className="font-semibold">발행 예약하기</span>
-                  <span className="text-xs text-muted-foreground mt-1">
-                    최적 시간에 자동으로 게시
+                </div>
+                <div className="flex flex-col items-center text-center p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <Calendar className="h-10 w-10 text-accent mb-3" />
+                  <span className="font-semibold mb-1">2. 자동 스케줄링</span>
+                  <span className="text-xs text-muted-foreground">
+                    최적 시간대에 자동으로 게시 예약
                   </span>
-                </Button>
-                <Button variant="hero" size="lg" className="h-auto py-4 flex-col items-start">
-                  <TrendingUp className="h-5 w-5 mb-2" />
-                  <span className="font-semibold">캠페인 시작</span>
-                  <span className="text-xs text-muted-foreground mt-1">
-                    지금 바로 마케팅 시작
+                </div>
+                <div className="flex flex-col items-center text-center p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                  <TrendingUp className="h-10 w-10 text-accent mb-3" />
+                  <span className="font-semibold mb-1">3. 실시간 성과 분석</span>
+                  <span className="text-xs text-muted-foreground">
+                    대시보드에서 캠페인 성과 모니터링
                   </span>
-                </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
