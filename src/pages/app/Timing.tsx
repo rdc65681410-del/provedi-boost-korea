@@ -127,11 +127,11 @@ const Timing = () => {
 
                 {/* Heatmap */}
                 <div className="overflow-x-auto">
-                  <div className="min-w-[800px] space-y-2">
+                  <div className="min-w-[1200px] space-y-2">
                     {/* Hour labels */}
                     <div className="grid grid-cols-[60px_1fr] gap-2">
                       <div />
-                      <div className="grid grid-cols-24 gap-1">
+                      <div className="grid gap-1" style={{ gridTemplateColumns: "repeat(24, minmax(32px, 1fr))" }}>
                         {Array.from({ length: 24 }, (_, i) => (
                           <div key={i} className="text-xs text-center text-muted-foreground">
                             {i}
@@ -148,7 +148,7 @@ const Timing = () => {
                           <div className="text-sm font-medium flex items-center">
                             {day}
                           </div>
-                          <div className="grid grid-cols-24 gap-1">
+                          <div className="grid gap-1" style={{ gridTemplateColumns: "repeat(24, minmax(32px, 1fr))" }}>
                             {hours.map(({ hour, activity }) => (
                               <div
                                 key={`${day}-${hour}`}
