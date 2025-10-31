@@ -10,6 +10,7 @@ import Dashboard from "./pages/app/Dashboard";
 import Analyze from "./pages/app/Analyze";
 import ContentGenerate from "./pages/app/ContentGenerate";
 import Channels from "./pages/app/Channels";
+import Timing from "./pages/app/Timing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,7 +30,7 @@ const App = () => (
             <Route path="generate" element={<ContentGenerate />} />
             <Route path="channels" element={<Channels />} />
             <Route path="content" element={<Dashboard />} />
-            <Route path="timing" element={<Dashboard />} />
+            <Route path="timing" element={<Timing />} />
             <Route path="packages" element={<Dashboard />} />
             <Route path="campaigns" element={<Dashboard />} />
             <Route path="reports" element={<Dashboard />} />
