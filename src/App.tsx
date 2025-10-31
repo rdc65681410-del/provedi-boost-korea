@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AppLayout from "./pages/App";
 import Dashboard from "./pages/app/Dashboard";
+import Analyze from "./pages/app/Analyze";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,7 +23,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/app" element={<AppLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="analyze" element={<Dashboard />} />
+            <Route path="analyze" element={<Analyze />} />
             <Route path="channels" element={<Dashboard />} />
             <Route path="content" element={<Dashboard />} />
             <Route path="timing" element={<Dashboard />} />

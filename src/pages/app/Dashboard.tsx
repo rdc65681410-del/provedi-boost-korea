@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, Target, FileText, Clock, ArrowUpRight } from "lucide-react";
 import dashboardImage from "@/assets/dashboard-preview.jpg";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const statsCards = [
   { title: "활성 캠페인", value: "12", change: "+3", icon: TrendingUp },
@@ -109,10 +109,12 @@ const Dashboard = () => {
             <CardDescription>새로운 캠페인을 시작해보세요</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button className="w-full justify-start" variant="outline" size="lg">
-              <FileText className="h-5 w-5 mr-3" />
-              상품 링크 분석하기
-            </Button>
+            <Link to="/app/analyze">
+              <Button className="w-full justify-start" variant="outline" size="lg">
+                <FileText className="h-5 w-5 mr-3" />
+                상품 링크 분석하기
+              </Button>
+            </Link>
             <Button className="w-full justify-start" variant="outline" size="lg">
               <Target className="h-5 w-5 mr-3" />
               채널 추천 받기
