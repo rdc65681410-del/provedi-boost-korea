@@ -127,9 +127,9 @@ const Timing = () => {
 
                 {/* Heatmap */}
                 <div className="overflow-x-auto">
-                  <div className="min-w-[800px]">
+                  <div className="min-w-[800px] space-y-2">
+                    {/* Hour labels */}
                     <div className="grid grid-cols-[60px_1fr] gap-2">
-                      {/* Hour labels */}
                       <div />
                       <div className="grid grid-cols-24 gap-1">
                         {Array.from({ length: 24 }, (_, i) => (
@@ -138,27 +138,27 @@ const Timing = () => {
                           </div>
                         ))}
                       </div>
-
-                      {/* Heatmap rows */}
-                      {heatmapData
-                        .filter(d => selectedDay === "전체" || d.day === selectedDay)
-                        .map(({ day, hours }) => (
-                          <>
-                            <div key={`label-${day}`} className="text-sm font-medium flex items-center">
-                              {day}
-                            </div>
-                            <div key={`cells-${day}`} className="grid grid-cols-24 gap-1">
-                              {hours.map(({ hour, activity }) => (
-                                <div
-                                  key={`${day}-${hour}`}
-                                  className={`aspect-square rounded ${getActivityColor(activity)} hover:ring-2 ring-primary cursor-pointer transition-all`}
-                                  title={`${day} ${hour}시: ${activity}% 활동량`}
-                                />
-                              ))}
-                            </div>
-                          </>
-                        ))}
                     </div>
+
+                    {/* Heatmap rows */}
+                    {heatmapData
+                      .filter(d => selectedDay === "전체" || d.day === selectedDay)
+                      .map(({ day, hours }) => (
+                        <div key={day} className="grid grid-cols-[60px_1fr] gap-2">
+                          <div className="text-sm font-medium flex items-center">
+                            {day}
+                          </div>
+                          <div className="grid grid-cols-24 gap-1">
+                            {hours.map(({ hour, activity }) => (
+                              <div
+                                key={`${day}-${hour}`}
+                                className={`aspect-square rounded ${getActivityColor(activity)} hover:ring-2 ring-primary cursor-pointer transition-all`}
+                                title={`${day} ${hour}시: ${activity}% 활동량`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
 
                     {/* Legend */}
                     <div className="flex items-center gap-2 mt-6 justify-end">
