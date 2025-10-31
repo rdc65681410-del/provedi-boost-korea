@@ -21,7 +21,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "대시보드", path: "/app" },
   { icon: Link2, label: "링크 분석", path: "/app/analyze" },
   { icon: Target, label: "채널 추천", path: "/app/channels" },
-  { icon: FileText, label: "콘텐츠 생성", path: "/app/content" },
+  { icon: FileText, label: "콘텐츠 생성", path: "/app/generate" },
   { icon: Clock, label: "시간 최적화", path: "/app/timing" },
   { icon: CreditCard, label: "패키지 결제", path: "/app/packages" },
   { icon: TrendingUp, label: "캠페인", path: "/app/campaigns" },
