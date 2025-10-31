@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Target, FileText, Clock, ArrowUpRight } from "lucide-react";
 import dashboardImage from "@/assets/dashboard-preview.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const statsCards = [
   { title: "활성 캠페인", value: "12", change: "+3", icon: TrendingUp },
@@ -11,10 +14,39 @@ const statsCards = [
 ];
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState<string>("");
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+      
+      // Get user profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("name")
+        .eq("id", session.user.id)
+        .single();
+      
+      if (profile) {
+        setUserName(profile.name);
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
+  
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">대시보드</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          {userName ? `${userName}님, 환영합니다!` : "대시보드"}
+        </h1>
         <p className="text-muted-foreground">맘카페 마케팅 성과를 한눈에 확인하세요</p>
       </div>
       

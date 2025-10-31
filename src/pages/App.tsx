@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { 
   LayoutDashboard, 
   Link2, 
@@ -29,6 +31,33 @@ const navItems = [
 
 const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate("/auth");
+      }
+    };
+    
+    checkAuth();
+    
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/auth");
+      }
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+  
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("로그아웃 되었습니다");
+    navigate("/auth");
+  };
   
   return (
     <div className="flex h-screen bg-background">
@@ -90,8 +119,8 @@ const AppLayout = () => {
           </Button>
           
           <div className="flex items-center space-x-4 ml-auto">
-            <Button variant="outline" size="sm">
-              프로필
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              로그아웃
             </Button>
           </div>
         </header>
