@@ -23,7 +23,9 @@ import {
   Award,
   BarChart3,
   Calendar,
-  Zap
+  Zap,
+  Plus,
+  Minus
 } from "lucide-react";
 import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, BarChart, Bar } from "recharts";
@@ -44,13 +46,14 @@ interface ChannelRecommendation {
     hotdeal: number;
   };
   successRate: number;
+  recommendedPosts: number;
 }
 
 const Analyze = () => {
   const [productUrl, setProductUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
-  const [selectedChannels, setSelectedChannels] = useState<Set<number>>(new Set());
+  const [selectedChannels, setSelectedChannels] = useState<Map<number, number>>(new Map());
 
   const handleAnalyze = async () => {
     if (!productUrl) {
@@ -135,6 +138,7 @@ const Analyze = () => {
               hotdeal: 100000
             },
             successRate: 87,
+            recommendedPosts: 15,
           },
           {
             name: "베베하우스",
@@ -152,6 +156,7 @@ const Analyze = () => {
               hotdeal: 95000
             },
             successRate: 82,
+            recommendedPosts: 12,
           },
           {
             name: "우리아이맘",
@@ -169,6 +174,7 @@ const Analyze = () => {
               hotdeal: 85000
             },
             successRate: 79,
+            recommendedPosts: 10,
           },
           {
             name: "송파맘카페",
@@ -186,6 +192,7 @@ const Analyze = () => {
               hotdeal: 80000
             },
             successRate: 75,
+            recommendedPosts: 8,
           },
           {
             name: "대치동맘모임",
@@ -203,6 +210,7 @@ const Analyze = () => {
               hotdeal: 75000
             },
             successRate: 72,
+            recommendedPosts: 7,
           },
         ],
         contentSamples: [
@@ -241,23 +249,40 @@ const Analyze = () => {
   };
 
   const toggleChannelSelection = (index: number) => {
-    const newSelection = new Set(selectedChannels);
+    const newSelection = new Map(selectedChannels);
     if (newSelection.has(index)) {
       newSelection.delete(index);
     } else {
-      newSelection.add(index);
+      const recommendedCount = analysisResult?.channels[index]?.recommendedPosts || 10;
+      newSelection.set(index, recommendedCount);
     }
+    setSelectedChannels(newSelection);
+  };
+
+  const updateChannelCount = (index: number, delta: number) => {
+    const newSelection = new Map(selectedChannels);
+    const currentCount = newSelection.get(index) || 0;
+    const newCount = Math.max(1, Math.min(50, currentCount + delta));
+    newSelection.set(index, newCount);
     setSelectedChannels(newSelection);
   };
 
   const calculateTotal = () => {
     if (!analysisResult) return 0;
     let total = 0;
-    selectedChannels.forEach(index => {
+    selectedChannels.forEach((count, index) => {
       const channel = analysisResult.channels[index];
       const typeKey = channel.contentType === "후기형" ? "review" : 
                      channel.contentType === "질문형" ? "question" : "hotdeal";
-      total += channel.pricing[typeKey];
+      total += channel.pricing[typeKey] * count;
+    });
+    return total;
+  };
+
+  const getTotalPosts = () => {
+    let total = 0;
+    selectedChannels.forEach((count) => {
+      total += count;
     });
     return total;
   };
@@ -657,45 +682,51 @@ const Analyze = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {analysisResult.channels.map((channel: ChannelRecommendation, idx: number) => (
-                <Card 
-                  key={idx} 
-                  className={`border-2 transition-all cursor-pointer ${
-                    selectedChannels.has(idx)
-                      ? 'border-accent bg-accent/5 shadow-lg'
-                      : 'border-border hover:border-accent/50'
-                  }`}
-                  onClick={() => toggleChannelSelection(idx)}
-                >
-                  <CardContent className="pt-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="text-4xl">
-                          {channel.logo}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-bold">{channel.name}</h3>
-                            {selectedChannels.has(idx) && (
-                              <Badge className="bg-accent">선택됨 ✓</Badge>
-                            )}
-                            {idx === 0 && (
-                              <Badge className="bg-primary">최고 추천</Badge>
-                            )}
+              {analysisResult.channels.map((channel: ChannelRecommendation, idx: number) => {
+                const isSelected = selectedChannels.has(idx);
+                const postCount = selectedChannels.get(idx) || 0;
+                
+                return (
+                  <Card 
+                    key={idx} 
+                    className={`border-2 transition-all ${
+                      isSelected
+                        ? 'border-accent bg-accent/5 shadow-lg'
+                        : 'border-border hover:border-accent/50'
+                    }`}
+                  >
+                    <CardContent className="pt-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="text-4xl">
+                            {channel.logo}
                           </div>
-                          <p className="text-sm text-muted-foreground">{channel.reason}</p>
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-lg font-bold">{channel.name}</h3>
+                              {isSelected && (
+                                <Badge className="bg-accent">선택됨 ✓</Badge>
+                              )}
+                              {idx === 0 && (
+                                <Badge className="bg-primary">최고 추천</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">{channel.reason}</p>
+                            <Badge variant="outline" className="text-xs">
+                              추천: {channel.recommendedPosts}개 포스팅
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end space-y-1">
+                          <Badge variant="secondary" className="text-lg font-bold">
+                            {channel.rating}
+                          </Badge>
+                          <div className="flex items-center text-accent">
+                            <Star className="h-4 w-4 mr-1 fill-current" />
+                            <span className="text-sm font-semibold">{channel.score}점</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end space-y-1">
-                        <Badge variant="secondary" className="text-lg font-bold">
-                          {channel.rating}
-                        </Badge>
-                        <div className="flex items-center text-accent">
-                          <Star className="h-4 w-4 mr-1 fill-current" />
-                          <span className="text-sm font-semibold">{channel.score}점</span>
-                        </div>
-                      </div>
-                    </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
                       <div className="flex items-center space-x-2">
@@ -728,42 +759,98 @@ const Analyze = () => {
                       </div>
                     </div>
 
-                    {/* 가격 견적 */}
-                    <div className="pt-4 border-t border-border">
-                      <p className="text-sm font-semibold mb-3">콘텐츠 타입별 견적</p>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className={`p-3 rounded-lg text-center transition-all ${
-                          channel.contentType === "후기형" 
-                            ? 'bg-accent text-accent-foreground' 
-                            : 'bg-muted'
-                        }`}>
-                          <div className="text-xs mb-1">후기형</div>
-                          <div className="font-bold">{channel.pricing.review.toLocaleString()}원</div>
+                      {/* 가격 견적 & 선택/개수 조절 */}
+                      <div className="pt-4 border-t border-border space-y-4">
+                        <div>
+                          <p className="text-sm font-semibold mb-3">콘텐츠 타입별 견적 (개당)</p>
+                          <div className="grid grid-cols-3 gap-3">
+                            <div className={`p-3 rounded-lg text-center transition-all ${
+                              channel.contentType === "후기형" 
+                                ? 'bg-accent text-accent-foreground' 
+                                : 'bg-muted'
+                            }`}>
+                              <div className="text-xs mb-1">후기형</div>
+                              <div className="font-bold">{channel.pricing.review.toLocaleString()}원</div>
+                            </div>
+                            <div className={`p-3 rounded-lg text-center transition-all ${
+                              channel.contentType === "질문형" 
+                                ? 'bg-accent text-accent-foreground' 
+                                : 'bg-muted'
+                            }`}>
+                              <div className="text-xs mb-1">질문형</div>
+                              <div className="font-bold">{channel.pricing.question.toLocaleString()}원</div>
+                            </div>
+                            <div className={`p-3 rounded-lg text-center transition-all ${
+                              channel.contentType === "핫딜형" 
+                                ? 'bg-accent text-accent-foreground' 
+                                : 'bg-muted'
+                            }`}>
+                              <div className="text-xs mb-1">핫딜형</div>
+                              <div className="font-bold">{channel.pricing.hotdeal.toLocaleString()}원</div>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2 text-center">
+                            현재 추천: <span className="font-semibold text-accent">{channel.contentType}</span>
+                          </p>
                         </div>
-                        <div className={`p-3 rounded-lg text-center transition-all ${
-                          channel.contentType === "질문형" 
-                            ? 'bg-accent text-accent-foreground' 
-                            : 'bg-muted'
-                        }`}>
-                          <div className="text-xs mb-1">질문형</div>
-                          <div className="font-bold">{channel.pricing.question.toLocaleString()}원</div>
-                        </div>
-                        <div className={`p-3 rounded-lg text-center transition-all ${
-                          channel.contentType === "핫딜형" 
-                            ? 'bg-accent text-accent-foreground' 
-                            : 'bg-muted'
-                        }`}>
-                          <div className="text-xs mb-1">핫딜형</div>
-                          <div className="font-bold">{channel.pricing.hotdeal.toLocaleString()}원</div>
-                        </div>
+
+                        {/* 선택 및 개수 조절 */}
+                        {isSelected ? (
+                          <div className="flex items-center justify-between p-4 rounded-lg bg-accent/10 border border-accent">
+                            <div className="flex items-center gap-3">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateChannelCount(idx, -1);
+                                }}
+                                disabled={postCount <= 1}
+                              >
+                                <Minus className="h-4 w-4" />
+                              </Button>
+                              <div className="text-center min-w-[80px]">
+                                <div className="text-2xl font-bold text-accent">{postCount}</div>
+                                <div className="text-xs text-muted-foreground">포스팅</div>
+                              </div>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateChannelCount(idx, 1);
+                                }}
+                                disabled={postCount >= 50}
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <Button
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleChannelSelection(idx);
+                              }}
+                            >
+                              선택 취소
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button
+                            className="w-full"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleChannelSelection(idx);
+                            }}
+                          >
+                            이 채널 선택하기
+                          </Button>
+                        )}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-2 text-center">
-                        현재 추천: <span className="font-semibold text-accent">{channel.contentType}</span>
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
 
               {/* 결제 요약 */}
               {selectedChannels.size > 0 && (
@@ -774,6 +861,8 @@ const Analyze = () => {
                         <h3 className="text-xl font-bold mb-2">선택한 채널 요약</h3>
                         <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                           <span>선택된 채널: <span className="font-bold text-accent">{selectedChannels.size}개</span></span>
+                          <span>•</span>
+                          <span>총 포스팅: <span className="font-bold text-accent">{getTotalPosts()}개</span></span>
                           {selectedChannels.size > 1 && (
                             <>
                               <span>•</span>
