@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
   LinkIcon, 
   TrendingUp, 
@@ -16,9 +17,12 @@ import {
   Loader2,
   FileText,
   Calendar,
-  CreditCard
+  CreditCard,
+  ThumbsUp,
+  ThumbsDown
 } from "lucide-react";
 import { toast } from "sonner";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 interface ChannelRecommendation {
   name: string;
@@ -67,7 +71,31 @@ const Analyze = () => {
           category: "가구/인테리어",
           priceRange: "30,000-50,000원",
           keywords: ["북유럽", "원목", "선반", "수납", "인테리어"],
+          image: productUrl, // 실제로는 AI가 추출
         },
+        // 종합 분석 평가
+        overallScore: 61,
+        scoreLevel: "보통",
+        reviewAnalysis: {
+          totalReviews: 298,
+          positiveCount: 234,
+          negativeCount: 64,
+          positiveReviews: [
+            "대부분의 고객들이 이 제품을 선불로 구매하였으며, 수신자들이 만족했다는 리뷰가 많습니다. 그리고 제품의 귀여움, 이동이 편리한 무게...",
+          ],
+          negativeReviews: [
+            "주로 제품의 충전 문제와 배송 문제를 지적하고 있습니다. 충전 시간이 짧다는 불만과 충전이 아예 되지 않는 문제가 있었습니다. 또한..."
+          ],
+          warning: "관계 허락에 영향을 미칠 수 있는 문제 발견"
+        },
+        // 상위 노출 키워드
+        topKeywords: [
+          { rank: 1, keyword: "무드등", count: "1위" },
+          { rank: 2, keyword: "인테리어조명", count: "6위" },
+          { rank: 3, keyword: "수면등", count: "12위" },
+          { rank: 4, keyword: "수유등", count: "57위" },
+          { rank: 5, keyword: "미니조명", count: "78위" },
+        ],
         channels: [
           {
             name: "맘스홀릭베이비",
@@ -115,6 +143,134 @@ const Analyze = () => {
               review: 130000,
               question: 100000,
               hotdeal: 85000
+            }
+          },
+          {
+            name: "송파맘카페",
+            score: 82,
+            members: "25,100명",
+            activityLevel: "높음",
+            cost: "무료",
+            contentType: "후기형",
+            reason: "지역 밀착형, 실제 사용 후기 선호",
+            rating: "B+",
+            logo: "🌸",
+            pricing: {
+              review: 120000,
+              question: 95000,
+              hotdeal: 80000
+            }
+          },
+          {
+            name: "대치동맘모임",
+            score: 79,
+            members: "22,800명",
+            activityLevel: "보통",
+            cost: "무료",
+            contentType: "질문형",
+            reason: "교육 관심도 높은 학부모 타겟",
+            rating: "B+",
+            logo: "📚",
+            pricing: {
+              review: 115000,
+              question: 90000,
+              hotdeal: 75000
+            }
+          },
+          {
+            name: "일산맘스토리",
+            score: 76,
+            members: "20,500명",
+            activityLevel: "보통",
+            cost: "5,000원",
+            contentType: "핫딜형",
+            reason: "신도시 젊은층, 트렌디한 제품 선호",
+            rating: "B",
+            logo: "🏙️",
+            pricing: {
+              review: 110000,
+              question: 85000,
+              hotdeal: 70000
+            }
+          },
+          {
+            name: "부산맘키즈",
+            score: 73,
+            members: "19,200명",
+            activityLevel: "보통",
+            cost: "무료",
+            contentType: "후기형",
+            reason: "부산 지역 맘들의 활발한 정보 공유",
+            rating: "B",
+            logo: "🌊",
+            pricing: {
+              review: 105000,
+              question: 82000,
+              hotdeal: 68000
+            }
+          },
+          {
+            name: "성남맘플러스",
+            score: 70,
+            members: "17,900명",
+            activityLevel: "보통",
+            cost: "무료",
+            contentType: "질문형",
+            reason: "실용적 정보 교환 활발",
+            rating: "B",
+            logo: "🏘️",
+            pricing: {
+              review: 100000,
+              question: 78000,
+              hotdeal: 65000
+            }
+          },
+          {
+            name: "인천맘네트워크",
+            score: 67,
+            members: "16,400명",
+            activityLevel: "보통",
+            cost: "5,000원",
+            contentType: "핫딜형",
+            reason: "가성비 중시, 할인 정보 빠른 확산",
+            rating: "B-",
+            logo: "✈️",
+            pricing: {
+              review: 95000,
+              question: 75000,
+              hotdeal: 62000
+            }
+          },
+          {
+            name: "광주맘커뮤니티",
+            score: 64,
+            members: "15,100명",
+            activityLevel: "보통",
+            cost: "무료",
+            contentType: "후기형",
+            reason: "지역 특화 제품 반응 좋음",
+            rating: "B-",
+            logo: "🌳",
+            pricing: {
+              review: 90000,
+              question: 72000,
+              hotdeal: 60000
+            }
+          },
+          {
+            name: "대구맘앤키즈",
+            score: 61,
+            members: "14,200명",
+            activityLevel: "낮음",
+            cost: "무료",
+            contentType: "질문형",
+            reason: "착실한 회원층, 장기 캠페인 유리",
+            rating: "C+",
+            logo: "🍎",
+            pricing: {
+              review: 85000,
+              question: 70000,
+              hotdeal: 58000
             }
           },
         ],
@@ -236,45 +392,185 @@ const Analyze = () => {
       {/* 분석 결과 */}
       {analysisResult && (
         <div className="space-y-6 animate-fade-in">
-          {/* 상품 정보 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>상품 분석 결과</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">상품명</p>
-                  <p className="font-semibold">{analysisResult.product.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">카테고리</p>
-                  <Badge variant="secondary">{analysisResult.product.category}</Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">가격대</p>
-                  <p className="font-semibold">{analysisResult.product.priceRange}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">주요 키워드</p>
-                  <div className="flex flex-wrap gap-1">
-                    {analysisResult.product.keywords.slice(0, 3).map((keyword: string, idx: number) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        {keyword}
-                      </Badge>
-                    ))}
+          {/* 상품 정보 + 종합 분석 평가 */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* 상품 정보 */}
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>상품 분석 결과</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-6 mb-6">
+                  {/* 상품 이미지 */}
+                  <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-muted-foreground text-xs">상품 이미지</span>
+                  </div>
+                  
+                  {/* 상품 정보 */}
+                  <div className="flex-1">
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      <Badge variant="outline">가구/인테리어</Badge>
+                      <Badge variant="outline">인테리어 소품</Badge>
+                      <Badge variant="outline">조명</Badge>
+                      <Badge variant="outline">인테리어 조명</Badge>
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">{analysisResult.product.name}</h3>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">가격</p>
+                    <p className="font-semibold">{analysisResult.product.priceRange}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">판매 건수(7일)</p>
+                    <p className="font-semibold">{analysisResult.reviewAnalysis.totalReviews}건</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">예상 매출액(7일)</p>
+                    <p className="font-semibold">396만원</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">평균 배송일</p>
+                    <p className="font-semibold">1.6일</p>
+                  </div>
+                </div>
+                
+                <div className="text-xs text-muted-foreground mt-4">
+                  2024년 01월 01일 13:34 업데이트
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 종합 분석 평가 */}
+            <Card>
+              <CardHeader>
+                <CardTitle>종합 분석 평가</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* 게이지 차트 */}
+                <div className="flex flex-col items-center mb-6">
+                  <div className="relative w-48 h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { value: analysisResult.overallScore },
+                            { value: 100 - analysisResult.overallScore }
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          startAngle={180}
+                          endAngle={0}
+                          innerRadius={60}
+                          outerRadius={80}
+                          dataKey="value"
+                        >
+                          <Cell fill="#F59E0B" />
+                          <Cell fill="#E5E7EB" />
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="text-3xl font-bold">{analysisResult.scoreLevel}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {analysisResult.overallScore}점<span className="text-xs">/100점</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 경고 메시지 */}
+                {analysisResult.reviewAnalysis.warning && (
+                  <div className="flex items-start gap-2 p-3 bg-destructive/10 rounded-lg">
+                    <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-destructive">
+                      {analysisResult.reviewAnalysis.warning}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 상위 노출 키워드 + 리뷰 분석 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 상위 노출 키워드 */}
+            <Card>
+              <CardHeader>
+                <CardTitle>상위 노출 키워드</CardTitle>
+                <CardDescription>
+                  상위 1페이지에 노출되고 있는 키워드를 찾았어요.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {analysisResult.topKeywords.map((item: any, idx: number) => (
+                    <div key={idx} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary" className="w-8 h-8 flex items-center justify-center">
+                          {item.rank}위
+                        </Badge>
+                        <span className="font-semibold">{item.keyword}</span>
+                        <Badge variant="outline" className="text-xs">{item.count}</Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <Button variant="outline" className="w-full mt-4">
+                  상위 키워드로 순위 추적하기
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* 리뷰 분석 */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>리뷰 분석</CardTitle>
+                  <div className="text-sm text-muted-foreground">
+                    총 평점 4.3 · 리뷰 수 {analysisResult.reviewAnalysis.totalReviews}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* 긍정 리뷰 */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <ThumbsUp className="h-4 w-4 text-accent" />
+                    <span className="font-semibold text-accent">긍정 리뷰 요약</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {analysisResult.reviewAnalysis.positiveReviews[0]}
+                  </p>
+                </div>
+
+                {/* 부정 리뷰 */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <ThumbsDown className="h-4 w-4 text-destructive" />
+                    <span className="font-semibold text-destructive">부정 리뷰 요약</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {analysisResult.reviewAnalysis.negativeReviews[0]}
+                  </p>
+                </div>
+
+                <Button variant="outline" className="w-full">
+                  자세히 보기
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* 추천 채널 */}
           <Card>
             <CardHeader>
-              <CardTitle>추천 맘카페 채널 (Top 3)</CardTitle>
+              <CardTitle>브랜드 맞춤 추천 맘카페 (Top 10)</CardTitle>
               <CardDescription>
-                AI가 분석한 가장 효과적인 맘카페 채널입니다
+                AI가 분석한 가장 효과적인 맘카페 채널 순위입니다
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
