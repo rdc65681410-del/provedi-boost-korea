@@ -631,82 +631,91 @@ const Analyze = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {analysisResult.channels.slice(0, 5).map((channel: ChannelRecommendation, idx: number) => (
-                  <Card key={idx} className="hover:shadow-lg transition-all border-2 hover:border-accent">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="text-4xl">{channel.logo}</div>
-                        <Badge variant="secondary" className="text-lg font-bold">
-                          {channel.rating}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-lg mb-2">{channel.name}</CardTitle>
-                      <div className="flex items-center gap-2">
-                        <CafeActivityGrade 
-                          activityLevel={channel.activityLevel}
-                          activityScore={channel.score}
+              {analysisResult.channels && analysisResult.channels.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {analysisResult.channels.slice(0, 5).map((channel: ChannelRecommendation, idx: number) => (
+                    <Card key={idx} className="hover:shadow-lg transition-all border-2 hover:border-accent">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="text-4xl">{channel.logo}</div>
+                          <Badge variant="secondary" className="text-lg font-bold">
+                            {channel.rating}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg mb-2">{channel.name}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <CafeActivityGrade 
+                            activityLevel={channel.activityLevel}
+                            activityScore={channel.score}
+                            size="sm"
+                          />
+                          {idx === 0 && (
+                            <Badge className="bg-primary text-xs">최고 추천</Badge>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <p className="text-sm text-muted-foreground line-clamp-2">{channel.reason}</p>
+                        
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="flex items-center gap-1">
+                            <Users className="h-3 w-3 text-muted-foreground" />
+                            <span>{channel.members}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3 text-accent" />
+                            <span>{channel.successRate}% 성공률</span>
+                          </div>
+                        </div>
+
+                        <div className="pt-3 border-t">
+                          <p className="text-xs font-semibold mb-2">추천 상품 타입</p>
+                          <div className="grid grid-cols-3 gap-1">
+                            {["후기형", "질문형", "핫딜형"].map((type) => (
+                              <div 
+                                key={type}
+                                className={`text-center p-2 rounded text-xs ${
+                                  channel.contentType === type 
+                                    ? 'bg-accent text-accent-foreground font-bold' 
+                                    : 'bg-muted'
+                                }`}
+                              >
+                                {type}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="pt-2">
+                          <div className="text-xs text-muted-foreground mb-1">추천 포스팅 수</div>
+                          <Badge variant="outline" className="w-full justify-center">
+                            {channel.recommendedPosts}개
+                          </Badge>
+                        </div>
+
+                        <Button
+                          className="w-full"
                           size="sm"
-                        />
-                        {idx === 0 && (
-                          <Badge className="bg-primary text-xs">최고 추천</Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <p className="text-sm text-muted-foreground line-clamp-2">{channel.reason}</p>
-                      
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="flex items-center gap-1">
-                          <Users className="h-3 w-3 text-muted-foreground" />
-                          <span>{channel.members}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CheckCircle2 className="h-3 w-3 text-accent" />
-                          <span>{channel.successRate}% 성공률</span>
-                        </div>
-                      </div>
-
-                      <div className="pt-3 border-t">
-                        <p className="text-xs font-semibold mb-2">추천 상품 타입</p>
-                        <div className="grid grid-cols-3 gap-1">
-                          {["후기형", "질문형", "핫딜형"].map((type) => (
-                            <div 
-                              key={type}
-                              className={`text-center p-2 rounded text-xs ${
-                                channel.contentType === type 
-                                  ? 'bg-accent text-accent-foreground font-bold' 
-                                  : 'bg-muted'
-                              }`}
-                            >
-                              {type}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="pt-2">
-                        <div className="text-xs text-muted-foreground mb-1">추천 포스팅 수</div>
-                        <Badge variant="outline" className="w-full justify-center">
-                          {channel.recommendedPosts}개
-                        </Badge>
-                      </div>
-
-                      <Button
-                        className="w-full"
-                        size="sm"
-                        onClick={() => {
-                          toggleChannelSelection(idx);
-                          toast.success(`${channel.name} 선택됨`);
-                        }}
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        선택하기
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                          onClick={() => {
+                            toggleChannelSelection(idx);
+                            toast.success(`${channel.name} 선택됨`);
+                          }}
+                        >
+                          <Plus className="h-4 w-4 mr-1" />
+                          선택하기
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
+                    상품 URL을 입력하고 분석을 실행하면 맞춤 추천 카페가 표시됩니다
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
