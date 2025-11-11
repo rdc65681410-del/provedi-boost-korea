@@ -7,13 +7,13 @@ const CafeMatching = () => {
     <section className="py-20 px-4 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto max-w-6xl">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-          정교한 데이터를 통해
+          정교한 맞춤 데이터로
           <br />
           <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            브랜드에 최적화된 인플루언서를
+            브랜드에 최적화된 카페
           </span>
           <br />
-          매칭해 보세요.
+          매칭
         </h2>
 
         <div className="relative">
@@ -46,7 +46,7 @@ const CafeMatching = () => {
                 </div>
 
                 <p className="text-muted-foreground text-center md:text-left">
-                  AI가 분석한 최적의 카페 채널과 인플루언서를 매칭해드립니다
+                  AI가 분석한 최적의 카페 채널과 맞춤 카페를 매칭해드립니다
                 </p>
               </div>
 
