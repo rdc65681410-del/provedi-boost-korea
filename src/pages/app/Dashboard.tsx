@@ -17,29 +17,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState<string>("");
   
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
-      
-      // Get user profile
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("name")
-        .eq("id", session.user.id)
-        .single();
-      
-      if (profile) {
-        setUserName(profile.name);
-      }
-    };
-    
-    checkAuth();
-  }, [navigate]);
+  // Authentication check removed for demo purposes
   
   return (
     <div className="space-y-6">
