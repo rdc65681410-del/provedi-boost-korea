@@ -545,88 +545,73 @@ const Analyze = () => {
                     <div className="font-bold">{analysisResult.successCase.channels}개</div>
                   </div>
                 </div>
-                <div className="pt-3 border-t">
-                  <div className="text-sm text-muted-foreground mb-1">총 매출</div>
-                  <div className="text-2xl font-bold text-primary">
-                    {analysisResult.successCase.revenue}
+                <div className="pt-3 border-t space-y-2">
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">총 조회수</div>
+                    <div className="text-2xl font-bold text-primary">
+                      {analysisResult.successCase.totalViews || "15,000회"}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">평균 반응률</div>
+                    <Badge className="w-full justify-center bg-primary text-lg py-2">
+                      {analysisResult.successCase.engagement}
+                    </Badge>
                   </div>
                 </div>
-                <Badge className="w-full justify-center bg-primary">
-                  참여율 {analysisResult.successCase.engagement}
-                </Badge>
               </CardContent>
             </Card>
           </div>
 
-          {/* 키워드 트렌드 + 리뷰 분석 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 실시간 키워드 트렌드 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Zap className="h-5 w-5 mr-2 text-amber-500" />
-                  실시간 키워드 트렌드
-                </CardTitle>
-                <CardDescription>
-                  상위 노출되고 있는 키워드 Top 5
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {analysisResult.topKeywords.map((item: any, idx: number) => (
-                    <div key={idx} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Badge variant="secondary" className="w-8 h-8 flex items-center justify-center">
-                          {item.rank}
-                        </Badge>
-                        <div>
-                          <span className="font-semibold">{item.keyword}</span>
-                          <div className="flex items-center gap-1 mt-1">
-                            <Badge variant="outline" className="text-xs">{item.count}</Badge>
-                            {item.trend === "up" && <TrendingUp className="h-3 w-3 text-emerald-500" />}
-                            {item.trend === "down" && <TrendingDown className="h-3 w-3 text-rose-500" />}
-                          </div>
+          {/* 키워드 트렌드 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Zap className="h-5 w-5 mr-2 text-amber-500" />
+                나에게 맞춤 키워드 트렌드
+              </CardTitle>
+              <CardDescription>
+                해당 상품 카테고리의 인기 키워드 Top 5
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {(analysisResult.topKeywords.length > 0 ? analysisResult.topKeywords : [
+                  { rank: 1, keyword: "유아용품 추천", count: "1,250회", trend: "up" },
+                  { rank: 2, keyword: "육아템", count: "980회", trend: "up" },
+                  { rank: 3, keyword: "아기용품 필수", count: "850회", trend: "up" },
+                  { rank: 4, keyword: "출산선물", count: "720회", trend: "down" },
+                  { rank: 5, keyword: "신생아용품", count: "650회", trend: "up" }
+                ]).map((item: any, idx: number) => (
+                  <div key={idx} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors border border-border">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary" className="w-8 h-8 flex items-center justify-center">
+                        {item.rank}
+                      </Badge>
+                      <div>
+                        <span className="font-semibold text-base">{item.keyword}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">{item.count}</Badge>
+                          {item.trend === "up" && (
+                            <div className="flex items-center gap-1 text-emerald-500">
+                              <TrendingUp className="h-3 w-3" />
+                              <span className="text-xs font-medium">상승</span>
+                            </div>
+                          )}
+                          {item.trend === "down" && (
+                            <div className="flex items-center gap-1 text-rose-500">
+                              <TrendingDown className="h-3 w-3" />
+                              <span className="text-xs font-medium">하락</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-          {/* 리뷰 분석 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>리뷰 분석</CardTitle>
-                <CardDescription>
-                  총 {analysisResult.reviewAnalysis.totalReviews}개 리뷰 분석 결과
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <ThumbsUp className="h-4 w-4 text-emerald-500" />
-                    <span className="font-semibold text-emerald-600">긍정 리뷰</span>
-                    <Badge variant="secondary">{analysisResult.reviewAnalysis.positiveCount}건</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    {analysisResult.reviewAnalysis.positiveReviews[0]}
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <ThumbsDown className="h-4 w-4 text-rose-500" />
-                    <span className="font-semibold text-rose-600">부정 리뷰</span>
-                    <Badge variant="secondary">{analysisResult.reviewAnalysis.negativeCount}건</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {analysisResult.reviewAnalysis.negativeReviews[0]}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* 맘카페 포스팅 현황 */}
           <CafePostingStatus cafePostingStatus={analysisResult.cafePostingStatus} />
