@@ -33,6 +33,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis
 import { CompetitorKeywordMap } from "@/components/CompetitorKeywordMap";
 import { CafeExposureHeatmap } from "@/components/CafeExposureHeatmap";
 import { CafePostingStatus } from "@/components/CafePostingStatus";
+import { CafeActivityGrade } from "@/components/CafeActivityGrade";
+import { TimePerformancePredictor } from "@/components/TimePerformancePredictor";
 
 interface ChannelRecommendation {
   name: string;
@@ -596,12 +598,15 @@ const Analyze = () => {
             </CardContent>
           </Card>
 
+          {/* 시간대별 성과 예측 */}
+          <TimePerformancePredictor />
+
           {/* 추천 채널 */}
           <Card>
             <CardHeader>
               <CardTitle>브랜드 맞춤 추천 맘카페 (Top 5)</CardTitle>
               <CardDescription>
-                AI가 분석한 가장 효과적인 맘카페 채널 순위입니다
+                AI가 분석한 가장 효과적인 맘카페 채널 - 활성도 등급과 성과 예측 포함
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -620,12 +625,12 @@ const Analyze = () => {
                   >
                     <CardContent className="pt-6">
                       <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3 flex-1">
                           <div className="text-4xl">
                             {channel.logo}
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1 flex-wrap">
                               <h3 className="text-lg font-bold">{channel.name}</h3>
                               {isSelected && (
                                 <Badge className="bg-accent">선택됨 ✓</Badge>
@@ -635,9 +640,16 @@ const Analyze = () => {
                               )}
                             </div>
                             <p className="text-sm text-muted-foreground mb-2">{channel.reason}</p>
-                            <Badge variant="outline" className="text-xs">
-                              추천: {channel.recommendedPosts}개 포스팅
-                            </Badge>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge variant="outline" className="text-xs">
+                                추천: {channel.recommendedPosts}개 포스팅
+                              </Badge>
+                              <CafeActivityGrade 
+                                activityLevel={channel.activityLevel}
+                                activityScore={channel.score}
+                                size="sm"
+                              />
+                            </div>
                           </div>
                         </div>
                         <div className="flex flex-col items-end space-y-1">
