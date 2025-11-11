@@ -105,6 +105,62 @@ export type Database = {
           },
         ]
       }
+      generated_contents: {
+        Row: {
+          channel_name: string
+          content: string
+          content_type: string
+          created_at: string
+          id: string
+          order_item_id: string
+          posted_at: string | null
+          scheduled_date: string | null
+          scheduled_time: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          channel_name: string
+          content: string
+          content_type: string
+          created_at?: string
+          id?: string
+          order_item_id: string
+          posted_at?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          channel_name?: string
+          content?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          order_item_id?: string
+          posted_at?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_contents_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mom_cafe_channels: {
         Row: {
           activity_level: string | null
@@ -150,6 +206,98 @@ export type Database = {
           pricing?: Json | null
           success_rate?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          channel_name: string
+          content_type: string
+          created_at: string
+          id: string
+          order_id: string
+          post_count: number
+          price_per_post: number
+          total_price: number
+        }
+        Insert: {
+          channel_name: string
+          content_type: string
+          created_at?: string
+          id?: string
+          order_id: string
+          post_count: number
+          price_per_post: number
+          total_price: number
+        }
+        Update: {
+          channel_name?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          post_count?: number
+          price_per_post?: number
+          total_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_company: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          discount_amount: number | null
+          final_amount: number
+          id: string
+          product_name: string | null
+          product_url: string
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_company?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          discount_amount?: number | null
+          final_amount: number
+          id?: string
+          product_name?: string | null
+          product_url: string
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_company?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          discount_amount?: number | null
+          final_amount?: number
+          id?: string
+          product_name?: string | null
+          product_url?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

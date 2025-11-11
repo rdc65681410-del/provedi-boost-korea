@@ -353,7 +353,7 @@ const Analyze = () => {
     }, 100);
   };
 
-  const handleCompleteOrder = () => {
+  const handleCompleteOrder = async () => {
     if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
       toast.error("모든 필수 정보를 입력해주세요");
       return;
@@ -362,14 +362,51 @@ const Analyze = () => {
     const totalAmount = calculateCartTotal();
     const discount = cart.length > 1 ? 0.9 : 1;
     const finalAmount = Math.floor(totalAmount * discount);
+    const discountAmount = totalAmount - finalAmount;
 
-    // TODO: Stripe 결제 연동
-    toast.success(`주문이 완료되었습니다! 총 ${finalAmount.toLocaleString()}원`);
-    
-    // 주문 완료 후 초기화
-    setCart([]);
-    setShowCheckout(false);
-    setCustomerInfo({ name: "", email: "", phone: "", company: "" });
+    try {
+      toast.info("주문을 처리하고 있습니다...");
+
+      // Edge Function 호출하여 주문 생성 및 콘텐츠 자동 생성
+      const { data, error } = await supabase.functions.invoke('process-order', {
+        body: {
+          orderData: {
+            customerName: customerInfo.name,
+            customerEmail: customerInfo.email,
+            customerPhone: customerInfo.phone,
+            customerCompany: customerInfo.company,
+            productUrl: productUrl,
+            productName: analysisResult?.product?.name || "분석된 상품",
+            totalAmount,
+            discountAmount,
+            finalAmount
+          },
+          cartItems: cart
+        }
+      });
+
+      if (error) {
+        console.error('Order processing error:', error);
+        throw new Error(error.message || '주문 처리에 실패했습니다');
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || '주문 처리에 실패했습니다');
+      }
+
+      toast.success(`주문이 완료되었습니다! AI가 콘텐츠를 자동 생성했습니다.`);
+      toast.info("관리자 페이지에서 생성된 콘텐츠를 확인하실 수 있습니다.");
+      
+      // 주문 완료 후 초기화
+      setCart([]);
+      setShowCheckout(false);
+      setCustomerInfo({ name: "", email: "", phone: "", company: "" });
+      setSelectedChannels(new Map());
+      setSelectedContentTypes(new Map());
+    } catch (error: any) {
+      console.error('Order completion error:', error);
+      toast.error(error.message || "주문 처리 중 오류가 발생했습니다.");
+    }
   };
 
   const successRateData = analysisResult?.channels.map((ch: ChannelRecommendation) => ({

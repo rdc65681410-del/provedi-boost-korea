@@ -15,7 +15,8 @@ import {
   Settings, 
   Menu,
   X,
-  Trophy
+  Trophy,
+  Shield
 } from "lucide-react";
 
 const navItems = [
@@ -28,6 +29,7 @@ const navItems = [
   { icon: CreditCard, label: "패키지 결제", path: "/app/packages" },
   { icon: TrendingUp, label: "캠페인", path: "/app/campaigns" },
   { icon: FileBarChart, label: "리포트", path: "/app/reports" },
+  { icon: Shield, label: "관리자", path: "/app/admin" },
   { icon: Settings, label: "설정", path: "/app/settings" },
 ];
 

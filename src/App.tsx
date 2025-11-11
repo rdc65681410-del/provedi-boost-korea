@@ -15,6 +15,7 @@ import Timing from "./pages/app/Timing";
 import Packages from "./pages/app/Packages";
 import Reports from "./pages/app/Reports";
 import Campaigns from "./pages/app/Campaigns";
+import Admin from "./pages/app/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="packages" element={<Packages />} />
             <Route path="campaigns" element={<Campaigns />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="admin" element={<Admin />} />
             <Route path="settings" element={<Dashboard />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
