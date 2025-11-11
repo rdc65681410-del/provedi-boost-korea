@@ -3,11 +3,11 @@ import { TrendingUp, Users, Zap, Target } from "lucide-react";
 
 const stats = [
   {
-    icon: TrendingUp,
-    value: 3250,
-    suffix: "+",
-    label: "성공적인 캠페인",
-    description: "누적 진행"
+    icon: Zap,
+    value: 95,
+    suffix: "%",
+    label: "시간 절약",
+    description: "10시간 → 30분"
   },
   {
     icon: Users,
@@ -17,18 +17,18 @@ const stats = [
     description: "현재 이용 중"
   },
   {
-    icon: Zap,
-    value: 15,
-    suffix: "분",
-    label: "평균 분석 시간",
-    description: "빠른 결과"
+    icon: TrendingUp,
+    value: 3,
+    suffix: "배",
+    label: "ROI 향상",
+    description: "AI 최적화"
   },
   {
     icon: Target,
-    value: 94,
+    value: 98,
     suffix: "%",
-    label: "고객 만족도",
-    description: "실제 사용자 평가"
+    label: "매칭 정확도",
+    description: "AI 분석 기반"
   }
 ];
 

@@ -3,24 +3,24 @@ import { Link2, Target, FileText, Clock, TrendingUp, Shield } from "lucide-react
 
 const features = [
   {
-    icon: Link2,
-    title: "스마트 링크 분석",
-    description: "쿠팡, 네이버 스마트스토어, 자사몰 URL을 입력하면 AI가 자동으로 상품 정보와 카테고리를 분석합니다.",
-  },
-  {
-    icon: Target,
-    title: "최적 채널 추천",
-    description: "1,000+ 맘카페 데이터베이스에서 상품에 가장 적합한 채널을 찾아 추천합니다.",
-  },
-  {
     icon: FileText,
-    title: "AI 콘텐츠 생성",
-    description: "핫딜, 질문형, 후기형 등 각 채널에 맞는 최적의 게시글을 자동으로 생성합니다.",
+    title: "AI 콘텐츠 자동 생성",
+    description: "주문 즉시 각 채널에 최적화된 후기형, 질문형, 핫딜형 게시글을 AI가 자동으로 작성합니다.",
   },
   {
     icon: Clock,
-    title: "시간 최적화",
-    description: "채널별 활동 패턴을 분석하여 가장 효과적인 발행 시간을 추천합니다.",
+    title: "자동 스케줄링",
+    description: "채널별 최적 시간대를 AI가 분석하여 자동으로 발행 일정을 배정합니다.",
+  },
+  {
+    icon: Target,
+    title: "관리자 페이지",
+    description: "생성된 모든 콘텐츠를 한눈에 확인하고, 원클릭으로 승인 및 포스팅할 수 있습니다.",
+  },
+  {
+    icon: Link2,
+    title: "스마트 링크 분석",
+    description: "쿠팡, 네이버 스마트스토어 등 모든 쇼핑몰 링크를 AI가 자동으로 분석합니다.",
   },
   {
     icon: TrendingUp,

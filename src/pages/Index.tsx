@@ -1,7 +1,8 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
-import Process from "@/components/Process";
+import AutomationFlow from "@/components/AutomationFlow";
+import BeforeAfter from "@/components/BeforeAfter";
 import PlatformPreview from "@/components/PlatformPreview";
 import { AIProductNaming } from "@/components/AIProductNaming";
 import CafeMatching from "@/components/CafeMatching";
@@ -16,7 +17,8 @@ const Index = () => {
       <Header />
       <Hero />
       <Stats />
-      <Process />
+      <AutomationFlow />
+      <BeforeAfter />
       <PlatformPreview />
       <AIProductNaming />
       <CafeMatching />

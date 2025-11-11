@@ -39,14 +39,26 @@ const Hero = () => {
           </div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            맘카페 아직도<br />
-            <span className="text-accent">감으로</span> 홍보하나요?
+            맘카페 마케팅,<br />
+            <span className="text-accent">10시간을 30분으로</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed">
-            상품 링크만 입력하면 AI가 최적의 채널을 찾고, 콘텐츠를 생성하고,<br />
-            최고의 시간에 발행까지. 맘카페 마케팅의 모든 것을 자동화합니다.
+          <p className="text-lg md:text-xl text-white/90 mb-6 max-w-3xl mx-auto leading-relaxed">
+            링크만 입력하면 <span className="font-bold text-accent">AI가 콘텐츠를 자동 생성</span>하고<br />
+            <span className="font-bold text-accent">최적 시간에 자동 스케줄링</span>까지. 당신은 승인만 하면 됩니다.
           </p>
+          
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
+              <span className="text-white font-semibold text-sm">✨ 콘텐츠 자동 생성</span>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
+              <span className="text-white font-semibold text-sm">⚡ 자동 스케줄링</span>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
+              <span className="text-white font-semibold text-sm">📊 관리자 페이지</span>
+            </div>
+          </div>
 
           {/* Interactive Demo Input */}
           <div className="max-w-2xl mx-auto mb-8">
