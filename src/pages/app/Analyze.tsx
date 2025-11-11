@@ -75,6 +75,13 @@ const Analyze = () => {
   const [selectedContentTypes, setSelectedContentTypes] = useState<Map<number, "후기형" | "질문형" | "핫딜형">>(new Map());
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [customerInfo, setCustomerInfo] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    company: ""
+  });
 
   const handleAnalyze = async () => {
     if (!productUrl) {
@@ -334,12 +341,35 @@ const Analyze = () => {
       return;
     }
 
+    setShowCheckout(true);
+    setShowCart(false);
+    
+    // 결제 섹션으로 스크롤
+    setTimeout(() => {
+      document.getElementById('checkout-section')?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
+
+  const handleCompleteOrder = () => {
+    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
+      toast.error("모든 필수 정보를 입력해주세요");
+      return;
+    }
+
     const totalAmount = calculateCartTotal();
     const discount = cart.length > 1 ? 0.9 : 1;
     const finalAmount = Math.floor(totalAmount * discount);
 
-    toast.success(`결제 진행: ${finalAmount.toLocaleString()}원 (${cart.length}개 항목)`);
-    // 실제 결제 페이지로 이동하는 로직 추가
+    // TODO: Stripe 결제 연동
+    toast.success(`주문이 완료되었습니다! 총 ${finalAmount.toLocaleString()}원`);
+    
+    // 주문 완료 후 초기화
+    setCart([]);
+    setShowCheckout(false);
+    setCustomerInfo({ name: "", email: "", phone: "", company: "" });
   };
 
   const successRateData = analysisResult?.channels.map((ch: ChannelRecommendation) => ({
@@ -348,29 +378,32 @@ const Analyze = () => {
   })) || [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">링크 분석</h1>
-          <p className="text-muted-foreground">
-            상품 URL을 입력하면 AI가 최적의 맘카페 채널과 마케팅 전략을 추천합니다
-          </p>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">링크 분석</h1>
+            <p className="text-muted-foreground">
+              상품 URL을 입력하면 AI가 최적의 맘카페 채널과 마케팅 전략을 추천합니다
+            </p>
+          </div>
+          {analysisResult && (
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => {
+                setShowCart(!showCart);
+                setShowCheckout(false);
+              }}
+              className="relative"
+            >
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              장바구니
+              {cart.length > 0 && (
+                <Badge className="ml-2 bg-accent">{cart.length}</Badge>
+              )}
+            </Button>
+          )}
         </div>
-        {analysisResult && (
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => setShowCart(!showCart)}
-            className="relative"
-          >
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            장바구니
-            {cart.length > 0 && (
-              <Badge className="ml-2 bg-accent">{cart.length}</Badge>
-            )}
-          </Button>
-        )}
-      </div>
 
       {/* URL 입력 섹션 */}
       <Card>
@@ -1098,6 +1131,127 @@ const Analyze = () => {
                         </div>
                       </CardContent>
                     </Card>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* 결제 섹션 */}
+              {showCheckout && cart.length > 0 && (
+                <Card id="checkout-section" className="border-2 border-primary bg-gradient-to-r from-primary/5 to-accent/5 scroll-mt-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>결제 정보</span>
+                      <Button variant="ghost" onClick={() => setShowCheckout(false)}>닫기</Button>
+                    </CardTitle>
+                    <CardDescription>
+                      주문 정보를 입력해주세요
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* 주문 내역 요약 */}
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                      <h3 className="font-bold mb-3">주문 내역</h3>
+                      <div className="space-y-2">
+                        {cart.map((item, index) => (
+                          <div key={index} className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              {item.channelName} ({item.contentType} {item.postCount}개)
+                            </span>
+                            <span className="font-semibold">{item.totalPrice.toLocaleString()}원</span>
+                          </div>
+                        ))}
+                        {cart.length > 1 && (
+                          <div className="flex justify-between text-sm pt-2 border-t">
+                            <span className="text-accent font-semibold">패키지 할인 10%</span>
+                            <span className="text-accent font-bold">
+                              -{Math.floor(calculateCartTotal() * 0.1).toLocaleString()}원
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex justify-between pt-3 border-t">
+                          <span className="font-bold text-lg">최종 결제 금액</span>
+                          <span className="font-bold text-2xl text-accent">
+                            {cart.length > 1 
+                              ? Math.floor(calculateCartTotal() * 0.9).toLocaleString()
+                              : calculateCartTotal().toLocaleString()
+                            }원
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 고객 정보 입력 */}
+                    <div className="space-y-4">
+                      <h3 className="font-bold">고객 정보</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="customer-name">이름 *</Label>
+                          <Input
+                            id="customer-name"
+                            placeholder="홍길동"
+                            value={customerInfo.name}
+                            onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="customer-company">회사명</Label>
+                          <Input
+                            id="customer-company"
+                            placeholder="(주)회사명 (선택)"
+                            value={customerInfo.company}
+                            onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="customer-email">이메일 *</Label>
+                          <Input
+                            id="customer-email"
+                            type="email"
+                            placeholder="example@email.com"
+                            value={customerInfo.email}
+                            onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="customer-phone">연락처 *</Label>
+                          <Input
+                            id="customer-phone"
+                            type="tel"
+                            placeholder="010-1234-5678"
+                            value={customerInfo.phone}
+                            onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 결제 버튼 */}
+                    <div className="flex gap-3 pt-4">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="flex-1"
+                        onClick={() => {
+                          setShowCheckout(false);
+                          setShowCart(true);
+                        }}
+                      >
+                        장바구니로 돌아가기
+                      </Button>
+                      <Button
+                        size="lg"
+                        className="flex-1"
+                        onClick={handleCompleteOrder}
+                      >
+                        <CheckCircle2 className="h-5 w-5 mr-2" />
+                        주문 완료
+                      </Button>
+                    </div>
+
+                    <div className="text-xs text-muted-foreground text-center pt-4 border-t">
+                      <p>결제 완료 후 담당자가 24시간 내에 연락드립니다.</p>
+                      <p>캠페인 진행은 최대 3영업일 소요됩니다.</p>
+                    </div>
                   </CardContent>
                 </Card>
               )}
