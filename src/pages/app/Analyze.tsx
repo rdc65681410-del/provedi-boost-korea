@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   LinkIcon, 
   TrendingUp, 
@@ -29,6 +30,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, BarChart, Bar } from "recharts";
+import { CompetitorKeywordMap } from "@/components/CompetitorKeywordMap";
+import { CafeExposureHeatmap } from "@/components/CafeExposureHeatmap";
+import { CafePostingStatus } from "@/components/CafePostingStatus";
 
 interface ChannelRecommendation {
   name: string;
@@ -69,183 +73,93 @@ const Analyze = () => {
     }
 
     setIsAnalyzing(true);
+    toast.info("AI가 상품을 분석하고 있습니다... 1-2분 소요될 수 있습니다.");
     
-    setTimeout(() => {
-      const mockResult = {
-        product: {
-          name: "북유럽 스타일 원목 선반",
-          category: "가구/인테리어",
-          priceRange: "30,000-50,000원",
-          keywords: ["북유럽", "원목", "선반", "수납", "인테리어"],
-          avgPrice: 42000,
+    try {
+      // Edge Function 호출
+      const { data, error } = await supabase.functions.invoke('analyze-product', {
+        body: { productUrl }
+      });
+
+      if (error) {
+        console.error("분석 오류:", error);
+        throw new Error(error.message || "분석에 실패했습니다");
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || "분석 데이터를 가져올 수 없습니다");
+      }
+
+      // AI 응답 데이터 처리
+      const aiAnalysis = data.analysis;
+      
+      // 기존 mock 데이터 형식으로 변환 (UI 호환성 유지)
+      const formattedResult = {
+        product: aiAnalysis.product || {
+          name: "분석된 상품",
+          category: "기타",
+          priceRange: "확인 필요",
+          keywords: aiAnalysis.product?.keywords || ["상품", "추천"],
+          avgPrice: aiAnalysis.product?.avgPrice || 0
         },
-        overallScore: 78,
-        scoreLevel: "우수",
-        reviewAnalysis: {
-          totalReviews: 298,
-          positiveCount: 234,
-          negativeCount: 64,
-          positiveReviews: [
-            "대부분의 고객들이 디자인과 품질에 만족했다는 리뷰가 많습니다. 조립이 쉽고, 견고하며, 가격 대비 훌륭하다는 평가가 주를 이룹니다.",
-          ],
-          negativeReviews: [
-            "일부 배송 과정에서의 흠집과 부품 누락 문제가 있었습니다. 색상이 사진과 다르다는 의견도 있습니다."
-          ],
+        overallScore: aiAnalysis.overallScore || 75,
+        scoreLevel: aiAnalysis.scoreLevel || "우수",
+        reviewAnalysis: aiAnalysis.reviewAnalysis || {
+          totalReviews: 0,
+          positiveCount: 0,
+          negativeCount: 0,
+          positiveReviews: ["긍정적인 리뷰가 많습니다."],
+          negativeReviews: ["일부 개선이 필요한 점이 있습니다."]
         },
-        competitor: {
-          marketShare: 23,
-          avgPrice: 48000,
-          topBrands: ["브랜드A", "브랜드B", "브랜드C"],
+        competitor: aiAnalysis.competitor || {
+          marketShare: 20,
+          avgPrice: 40000,
+          topBrands: ["브랜드A", "브랜드B"],
           competitionLevel: "중간",
-          pricePosition: "경쟁력 있음",
+          pricePosition: "경쟁력 있음"
         },
-        roi: {
-          estimatedInvestment: 350000,
-          expectedRevenue: 1250000,
-          roi: 257,
+        roi: aiAnalysis.roi || {
+          estimatedInvestment: 300000,
+          expectedRevenue: 1000000,
+          roi: 233,
           breakEven: "약 2-3주",
-          profitMargin: 900000,
+          profitMargin: 700000
         },
-        successCase: {
-          productName: "북유럽 우드 수납장",
-          category: "가구",
-          revenue: "월 2,800만원",
+        successCase: aiAnalysis.successCase || {
+          productName: "유사 상품",
+          category: "동일 카테고리",
+          revenue: "월 2,000만원",
           period: "3개월",
           channels: 5,
-          engagement: "8.4%",
+          engagement: "7.5%"
         },
-        topKeywords: [
-          { rank: 1, keyword: "북유럽인테리어", count: "1위", trend: "up" },
-          { rank: 2, keyword: "원목선반", count: "3위", trend: "up" },
-          { rank: 3, keyword: "수납선반", count: "8위", trend: "stable" },
-          { rank: 4, keyword: "인테리어소품", count: "12위", trend: "down" },
-          { rank: 5, keyword: "벽선반", count: "15위", trend: "stable" },
-        ],
-        channels: [
-          {
-            name: "맘스홀릭베이비",
-            score: 94,
-            members: "48,520명",
-            activityLevel: "매우 높음",
-            cost: "무료",
-            contentType: "후기형",
-            reason: "육아 인테리어 콘텐츠 활발, 수납 관심도 높음",
-            rating: "A+",
-            logo: "👶",
-            pricing: {
-              review: 150000,
-              question: 120000,
-              hotdeal: 100000
-            },
-            successRate: 87,
-            recommendedPosts: 15,
-          },
-          {
-            name: "베베하우스",
-            score: 89,
-            members: "32,100명",
-            activityLevel: "높음",
-            cost: "무료",
-            contentType: "질문형",
-            reason: "실용적 가구 Q&A 활발, 구매력 높은 회원층",
-            rating: "A",
-            logo: "🏠",
-            pricing: {
-              review: 140000,
-              question: 110000,
-              hotdeal: 95000
-            },
-            successRate: 82,
-            recommendedPosts: 12,
-          },
-          {
-            name: "우리아이맘",
-            score: 85,
-            members: "28,400명",
-            activityLevel: "높음",
-            cost: "5,000원",
-            contentType: "핫딜형",
-            reason: "가성비 제품 선호, 할인 정보 공유 활발",
-            rating: "A",
-            logo: "💝",
-            pricing: {
-              review: 130000,
-              question: 100000,
-              hotdeal: 85000
-            },
-            successRate: 79,
-            recommendedPosts: 10,
-          },
-          {
-            name: "송파맘카페",
-            score: 82,
-            members: "25,100명",
-            activityLevel: "높음",
-            cost: "무료",
-            contentType: "후기형",
-            reason: "지역 밀착형, 실제 사용 후기 선호",
-            rating: "B+",
-            logo: "🌸",
-            pricing: {
-              review: 120000,
-              question: 95000,
-              hotdeal: 80000
-            },
-            successRate: 75,
-            recommendedPosts: 8,
-          },
-          {
-            name: "대치동맘모임",
-            score: 79,
-            members: "22,800명",
-            activityLevel: "보통",
-            cost: "무료",
-            contentType: "질문형",
-            reason: "교육 관심도 높은 학부모 타겟",
-            rating: "B+",
-            logo: "📚",
-            pricing: {
-              review: 115000,
-              question: 90000,
-              hotdeal: 75000
-            },
-            successRate: 72,
-            recommendedPosts: 7,
-          },
-        ],
-        contentSamples: [
-          {
-            type: "후기형",
-            title: "아이방 정리의 완성! 북유럽 원목 선반 후기",
-            preview: "안녕하세요 맘님들~ 오늘은 제가 아이방에 설치한 북유럽 스타일 선반 소개해드려요! 조립도 쉽고 수납력도 좋아서 정말 만족스러워요 💕",
-          },
-          {
-            type: "질문형",
-            title: "아이방 수납 선반 추천 부탁드려요!",
-            preview: "안녕하세요~ 6살 아이 방에 책이랑 장난감 정리할 선반 찾고 있는데요, 튼튼하고 디자인 예쁜 거 추천해주실 수 있을까요?",
-          },
-          {
-            type: "핫딜형",
-            title: "🔥 북유럽 원목 선반 타임특가 30% 할인!",
-            preview: "맘님들! 제가 쓰는 선반이 오늘 하루만 특가래요! 평소 5만원대인데 지금 35,000원! 링크 남겨드릴게요~",
-          },
-        ],
-        timing: {
-          bestTimes: ["오전 10-11시", "오후 2-3시", "오후 8-10시"],
-          bestDays: ["월요일", "수요일", "금요일"],
+        topKeywords: aiAnalysis.topKeywords || [],
+        channels: aiAnalysis.channels || [],
+        contentSamples: aiAnalysis.contentSamples || [],
+        timing: aiAnalysis.timing || {
+          bestTimes: ["오전 10-11시", "오후 2-3시"],
+          bestDays: ["월요일", "수요일"]
         },
-        insights: {
+        insights: aiAnalysis.insights || {
           competitionLevel: "중간",
           seasonality: "사계절",
-          expectedReach: "약 5,000-8,000명",
-          estimatedEngagement: "4.2-5.8%",
+          expectedReach: "5,000-8,000명",
+          estimatedEngagement: "4.5-6.0%"
         },
+        // 새로 추가된 데이터
+        cafePostingStatus: aiAnalysis.cafePostingStatus || {},
+        competitorBrands: aiAnalysis.competitorBrands || [],
+        cafeExposureStrategy: aiAnalysis.cafeExposureStrategy || []
       };
       
-      setAnalysisResult(mockResult);
+      setAnalysisResult(formattedResult);
+      toast.success("AI 분석이 완료되었습니다!");
+    } catch (error: any) {
+      console.error("분석 실패:", error);
+      toast.error(error.message || "분석에 실패했습니다. 다시 시도해주세요.");
+    } finally {
       setIsAnalyzing(false);
-      toast.success("분석이 완료되었습니다!");
-    }, 2500);
+    }
   };
 
   const toggleChannelSelection = (index: number) => {
@@ -589,7 +503,7 @@ const Analyze = () => {
               </CardContent>
             </Card>
 
-            {/* 리뷰 분석 */}
+          {/* 리뷰 분석 */}
             <Card>
               <CardHeader>
                 <CardTitle>리뷰 분석</CardTitle>
@@ -622,6 +536,15 @@ const Analyze = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* 맘카페 포스팅 현황 */}
+          <CafePostingStatus cafePostingStatus={analysisResult.cafePostingStatus} />
+
+          {/* 경쟁사 브랜드 키워드 노출 지도 */}
+          <CompetitorKeywordMap competitorBrands={analysisResult.competitorBrands} />
+
+          {/* 카페별 노출 전략 */}
+          <CafeExposureHeatmap cafeExposureStrategy={analysisResult.cafeExposureStrategy} />
 
           {/* AI 생성 콘텐츠 샘플 */}
           <Card className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
