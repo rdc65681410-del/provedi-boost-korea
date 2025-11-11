@@ -14,13 +14,15 @@ import {
   FileBarChart, 
   Settings, 
   Menu,
-  X
+  X,
+  Trophy
 } from "lucide-react";
 
 const navItems = [
   { icon: LayoutDashboard, label: "대시보드", path: "/app" },
   { icon: Link2, label: "링크 분석", path: "/app/analyze" },
   { icon: Target, label: "채널 추천", path: "/app/channels" },
+  { icon: Trophy, label: "카페 순위", path: "/app/rankings" },
   { icon: FileText, label: "콘텐츠 생성", path: "/app/generate" },
   { icon: Clock, label: "시간 최적화", path: "/app/timing" },
   { icon: CreditCard, label: "패키지 결제", path: "/app/packages" },

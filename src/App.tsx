@@ -10,6 +10,7 @@ import Dashboard from "./pages/app/Dashboard";
 import Analyze from "./pages/app/Analyze";
 import ContentGenerate from "./pages/app/ContentGenerate";
 import Channels from "./pages/app/Channels";
+import Rankings from "./pages/app/Rankings";
 import Timing from "./pages/app/Timing";
 import Packages from "./pages/app/Packages";
 import Reports from "./pages/app/Reports";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="analyze" element={<Analyze />} />
             <Route path="generate" element={<ContentGenerate />} />
             <Route path="channels" element={<Channels />} />
+            <Route path="rankings" element={<Rankings />} />
             <Route path="content" element={<Dashboard />} />
             <Route path="timing" element={<Timing />} />
             <Route path="packages" element={<Packages />} />
