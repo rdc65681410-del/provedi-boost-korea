@@ -74,7 +74,6 @@ const Analyze = () => {
   const [selectedChannels, setSelectedChannels] = useState<Map<number, number>>(new Map());
   const [selectedContentTypes, setSelectedContentTypes] = useState<Map<number, "후기형" | "질문형" | "핫딜형">>(new Map());
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [showCart, setShowCart] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
@@ -342,7 +341,6 @@ const Analyze = () => {
     }
 
     setShowCheckout(true);
-    setShowCart(false);
     
     // 결제 섹션으로 스크롤
     setTimeout(() => {
@@ -415,31 +413,14 @@ const Analyze = () => {
   })) || [];
 
   return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">링크 분석</h1>
-            <p className="text-muted-foreground">
-              상품 URL을 입력하면 AI가 최적의 맘카페 채널과 마케팅 전략을 추천합니다
-            </p>
-          </div>
-          {analysisResult && (
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                setShowCart(!showCart);
-                setShowCheckout(false);
-              }}
-              className="relative"
-            >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              장바구니
-              {cart.length > 0 && (
-                <Badge className="ml-2 bg-accent">{cart.length}</Badge>
-              )}
-            </Button>
-          )}
+    <div className="flex gap-6">
+      {/* 메인 콘텐츠 영역 */}
+      <div className="flex-1 space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">링크 분석</h1>
+          <p className="text-muted-foreground">
+            상품 URL을 입력하면 AI가 최적의 맘카페 채널과 마케팅 전략을 추천합니다
+          </p>
         </div>
 
       {/* URL 입력 섹션 */}
@@ -1079,107 +1060,11 @@ const Analyze = () => {
                 </Card>
               )}
 
-              {/* 장바구니 */}
-              {showCart && cart.length > 0 && (
-                <Card className="border-2 border-primary bg-gradient-to-r from-primary/5 to-accent/5">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>장바구니</span>
-                      <Button variant="ghost" onClick={() => setShowCart(false)}>닫기</Button>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {cart.map((item, index) => (
-                      <Card key={index} className="border">
-                        <CardContent className="pt-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-bold text-lg mb-1">{item.channelName}</h4>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Badge variant="outline">{item.contentType}</Badge>
-                                <span>•</span>
-                                <span>{item.postCount}개 포스팅</span>
-                                <span>•</span>
-                                <span>{item.pricePerPost.toLocaleString()}원/개</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <div className="text-right">
-                                <div className="text-2xl font-bold text-accent">
-                                  {item.totalPrice.toLocaleString()}원
-                                </div>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removeFromCart(index)}
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-
-                    <Card className="border-2 border-accent bg-accent/5">
-                      <CardContent className="pt-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <div>
-                            <div className="text-sm text-muted-foreground mb-1">총 항목</div>
-                            <div className="font-bold">{cart.length}개</div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-sm text-muted-foreground mb-1">합계</div>
-                            <div className="text-sm text-muted-foreground line-through">
-                              {calculateCartTotal().toLocaleString()}원
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {cart.length > 1 && (
-                          <div className="mb-4 p-3 bg-accent/10 rounded-lg">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-accent font-semibold">패키지 할인 10% 🎉</span>
-                              <span className="text-accent font-bold">
-                                -{Math.floor(calculateCartTotal() * 0.1).toLocaleString()}원
-                              </span>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="flex items-center justify-between pt-4 border-t">
-                          <div>
-                            <div className="text-sm text-muted-foreground">최종 결제 금액</div>
-                            <div className="text-3xl font-bold text-accent">
-                              {cart.length > 1 
-                                ? Math.floor(calculateCartTotal() * 0.9).toLocaleString()
-                                : calculateCartTotal().toLocaleString()
-                              }원
-                            </div>
-                          </div>
-                          <Button
-                            size="lg"
-                            className="h-16 px-8"
-                            onClick={handleProceedToPayment}
-                          >
-                            결제하기
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </CardContent>
-                </Card>
-              )}
-
               {/* 결제 섹션 */}
               {showCheckout && cart.length > 0 && (
                 <Card id="checkout-section" className="border-2 border-primary bg-gradient-to-r from-primary/5 to-accent/5 scroll-mt-6">
                   <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>결제 정보</span>
-                      <Button variant="ghost" onClick={() => setShowCheckout(false)}>닫기</Button>
-                    </CardTitle>
+                    <CardTitle>결제 정보</CardTitle>
                     <CardDescription>
                       주문 정보를 입력해주세요
                     </CardDescription>
@@ -1264,17 +1149,6 @@ const Analyze = () => {
 
                     {/* 결제 버튼 */}
                     <div className="flex gap-3 pt-4">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="flex-1"
-                        onClick={() => {
-                          setShowCheckout(false);
-                          setShowCart(true);
-                        }}
-                      >
-                        장바구니로 돌아가기
-                      </Button>
                       <Button
                         size="lg"
                         className="flex-1"
@@ -1396,6 +1270,118 @@ const Analyze = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+      )}
+      </div>
+
+      {/* 고정 장바구니 영역 */}
+      {analysisResult && (
+        <div className="w-96 flex-shrink-0">
+          <div className="sticky top-6 space-y-4">
+            <Card className="border-2 border-primary bg-gradient-to-r from-primary/5 to-accent/5">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  장바구니
+                  {cart.length > 0 && (
+                    <Badge className="ml-2 bg-accent">{cart.length}</Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {cart.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <ShoppingCart className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                    <p className="text-sm">선택한 채널이 없습니다</p>
+                    <p className="text-xs mt-1">채널을 선택하고 장바구니에 담아보세요</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {cart.map((item, index) => (
+                        <Card key={index} className="border">
+                          <CardContent className="pt-3 pb-3">
+                            <div className="space-y-2">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-bold text-sm mb-1 truncate">{item.channelName}</h4>
+                                  <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+                                    <Badge variant="outline" className="text-xs">{item.contentType}</Badge>
+                                    <span>•</span>
+                                    <span>{item.postCount}개</span>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 flex-shrink-0"
+                                  onClick={() => removeFromCart(index)}
+                                >
+                                  <Trash2 className="h-3 w-3 text-destructive" />
+                                </Button>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-lg font-bold text-accent">
+                                  {item.totalPrice.toLocaleString()}원
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    <Card className="border-2 border-accent bg-accent/5">
+                      <CardContent className="pt-4 pb-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">총 항목</span>
+                            <span className="font-bold">{cart.length}개</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">합계</span>
+                            <span className="text-muted-foreground line-through">
+                              {calculateCartTotal().toLocaleString()}원
+                            </span>
+                          </div>
+                          
+                          {cart.length > 1 && (
+                            <div className="p-2 bg-accent/10 rounded-lg">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-accent font-semibold">패키지 할인 10% 🎉</span>
+                                <span className="text-accent font-bold">
+                                  -{Math.floor(calculateCartTotal() * 0.1).toLocaleString()}원
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between pt-3 border-t">
+                            <span className="font-bold">최종 금액</span>
+                            <div className="text-2xl font-bold text-accent">
+                              {cart.length > 1 
+                                ? Math.floor(calculateCartTotal() * 0.9).toLocaleString()
+                                : calculateCartTotal().toLocaleString()
+                              }원
+                            </div>
+                          </div>
+
+                          <Button
+                            size="lg"
+                            className="w-full"
+                            onClick={handleProceedToPayment}
+                          >
+                            결제하기
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       )}
     </div>
