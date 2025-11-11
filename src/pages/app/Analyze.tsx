@@ -374,7 +374,7 @@ const Analyze = () => {
       {/* 분석 결과 */}
       {analysisResult && (
         <div className="space-y-6 animate-fade-in">
-          {/* 상품 정보 + 종합 평가 + ROI */}
+          {/* 상품 정보 + 종합 평가 + 맘카페 마케팅 잠재력 */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* 상품 정보 */}
             <Card>
@@ -446,34 +446,35 @@ const Analyze = () => {
               </CardContent>
             </Card>
 
-            {/* 예상 ROI */}
+            {/* 맘카페 마케팅 잠재력 */}
             <Card className="bg-gradient-to-br from-accent/5 to-primary/5 border-accent">
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <DollarSign className="h-5 w-5 mr-2 text-accent" />
-                  예상 ROI
+                  <Sparkles className="h-5 w-5 mr-2 text-accent" />
+                  맘카페 마케팅 잠재력
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">투자 금액</div>
-                  <div className="text-xl font-bold">
-                    {analysisResult.roi.estimatedInvestment.toLocaleString()}원
+                  <div className="text-sm text-muted-foreground mb-1">예상 도달 범위</div>
+                  <div className="text-xl font-bold text-accent">
+                    {analysisResult.insights?.expectedReach || "5,000-8,000명"}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-muted-foreground mb-1">예상 매출</div>
-                  <div className="text-xl font-bold text-accent">
-                    {analysisResult.roi.expectedRevenue.toLocaleString()}원
+                  <div className="text-sm text-muted-foreground mb-1">예상 참여율</div>
+                  <div className="text-xl font-bold">
+                    {analysisResult.insights?.estimatedEngagement || "4.5-6.0%"}
                   </div>
                 </div>
                 <div className="pt-3 border-t">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-accent">{analysisResult.roi.roi}%</span>
-                    <span className="text-sm text-muted-foreground">ROI</span>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className="text-sm text-muted-foreground">경쟁 수준</span>
+                    <Badge variant="secondary">{analysisResult.insights?.competitionLevel || "중간"}</Badge>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    손익분기 {analysisResult.roi.breakEven}
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm text-muted-foreground">시즌성</span>
+                    <span className="text-sm font-semibold">{analysisResult.insights?.seasonality || "사계절"}</span>
                   </div>
                 </div>
               </CardContent>
