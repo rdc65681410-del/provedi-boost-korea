@@ -26,7 +26,9 @@ import {
   Calendar,
   Zap,
   Plus,
-  Minus
+  Minus,
+  ShoppingCart,
+  Trash2
 } from "lucide-react";
 import { toast } from "sonner";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, BarChart, Bar } from "recharts";
@@ -35,6 +37,7 @@ import { CafeExposureHeatmap } from "@/components/CafeExposureHeatmap";
 import { CafePostingStatus } from "@/components/CafePostingStatus";
 import { CafeActivityGrade } from "@/components/CafeActivityGrade";
 import { TimePerformancePredictor } from "@/components/TimePerformancePredictor";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ChannelRecommendation {
   name: string;
@@ -55,11 +58,23 @@ interface ChannelRecommendation {
   recommendedPosts: number;
 }
 
+interface CartItem {
+  channelIndex: number;
+  channelName: string;
+  contentType: "후기형" | "질문형" | "핫딜형";
+  postCount: number;
+  pricePerPost: number;
+  totalPrice: number;
+}
+
 const Analyze = () => {
   const [productUrl, setProductUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [selectedChannels, setSelectedChannels] = useState<Map<number, number>>(new Map());
+  const [selectedContentTypes, setSelectedContentTypes] = useState<Map<number, "후기형" | "질문형" | "핫딜형">>(new Map());
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [showCart, setShowCart] = useState(false);
 
   const handleAnalyze = async () => {
     if (!productUrl) {
@@ -166,13 +181,22 @@ const Analyze = () => {
 
   const toggleChannelSelection = (index: number) => {
     const newSelection = new Map(selectedChannels);
+    const newContentTypes = new Map(selectedContentTypes);
+    
     if (newSelection.has(index)) {
       newSelection.delete(index);
+      newContentTypes.delete(index);
     } else {
       const recommendedCount = analysisResult?.channels[index]?.recommendedPosts || 10;
       newSelection.set(index, recommendedCount);
+      
+      // 기본 콘텐츠 타입 설정 (AI 추천)
+      const defaultType = analysisResult?.channels[index]?.contentType || "후기형";
+      newContentTypes.set(index, defaultType as "후기형" | "질문형" | "핫딜형");
     }
+    
     setSelectedChannels(newSelection);
+    setSelectedContentTypes(newContentTypes);
   };
 
   const updateChannelCount = (index: number, delta: number) => {
@@ -183,13 +207,20 @@ const Analyze = () => {
     setSelectedChannels(newSelection);
   };
 
+  const updateContentType = (index: number, type: "후기형" | "질문형" | "핫딜형") => {
+    const newContentTypes = new Map(selectedContentTypes);
+    newContentTypes.set(index, type);
+    setSelectedContentTypes(newContentTypes);
+  };
+
   const calculateTotal = () => {
     if (!analysisResult) return 0;
     let total = 0;
     selectedChannels.forEach((count, index) => {
       const channel = analysisResult.channels[index];
-      const typeKey = channel.contentType === "후기형" ? "review" : 
-                     channel.contentType === "질문형" ? "question" : "hotdeal";
+      const contentType = selectedContentTypes.get(index) || channel.contentType;
+      const typeKey = contentType === "후기형" ? "review" : 
+                     contentType === "질문형" ? "question" : "hotdeal";
       total += channel.pricing[typeKey] * count;
     });
     return total;
@@ -203,17 +234,58 @@ const Analyze = () => {
     return total;
   };
 
-  const handleProceedToPayment = () => {
+  const addToCart = () => {
     if (selectedChannels.size === 0) {
       toast.error("최소 1개 이상의 채널을 선택해주세요");
       return;
     }
 
-    const finalAmount = selectedChannels.size > 1 
-      ? Math.floor(calculateTotal() * 0.9) 
-      : calculateTotal();
+    const newCartItems: CartItem[] = [];
+    selectedChannels.forEach((count, index) => {
+      const channel = analysisResult.channels[index];
+      const contentType = selectedContentTypes.get(index) || channel.contentType;
+      const typeKey = contentType === "후기형" ? "review" : 
+                     contentType === "질문형" ? "question" : "hotdeal";
+      const pricePerPost = channel.pricing[typeKey];
+      
+      newCartItems.push({
+        channelIndex: index,
+        channelName: channel.name,
+        contentType: contentType as "후기형" | "질문형" | "핫딜형",
+        postCount: count,
+        pricePerPost,
+        totalPrice: pricePerPost * count
+      });
+    });
 
-    toast.success(`${selectedChannels.size}개 채널 선택 완료 - ${finalAmount.toLocaleString()}원`);
+    setCart([...cart, ...newCartItems]);
+    setSelectedChannels(new Map());
+    setSelectedContentTypes(new Map());
+    toast.success(`${newCartItems.length}개 채널이 장바구니에 담겼습니다`);
+  };
+
+  const removeFromCart = (index: number) => {
+    const newCart = cart.filter((_, i) => i !== index);
+    setCart(newCart);
+    toast.info("장바구니에서 제거되었습니다");
+  };
+
+  const calculateCartTotal = () => {
+    return cart.reduce((sum, item) => sum + item.totalPrice, 0);
+  };
+
+  const handleProceedToPayment = () => {
+    if (cart.length === 0) {
+      toast.error("장바구니가 비어있습니다");
+      return;
+    }
+
+    const totalAmount = calculateCartTotal();
+    const discount = cart.length > 1 ? 0.9 : 1;
+    const finalAmount = Math.floor(totalAmount * discount);
+
+    toast.success(`결제 진행: ${finalAmount.toLocaleString()}원 (${cart.length}개 항목)`);
+    // 실제 결제 페이지로 이동하는 로직 추가
   };
 
   const successRateData = analysisResult?.channels.map((ch: ChannelRecommendation) => ({
@@ -223,11 +295,27 @@ const Analyze = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">링크 분석</h1>
-        <p className="text-muted-foreground">
-          상품 URL을 입력하면 AI가 최적의 맘카페 채널과 마케팅 전략을 추천합니다
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">링크 분석</h1>
+          <p className="text-muted-foreground">
+            상품 URL을 입력하면 AI가 최적의 맘카페 채널과 마케팅 전략을 추천합니다
+          </p>
+        </div>
+        {analysisResult && (
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setShowCart(!showCart)}
+            className="relative"
+          >
+            <ShoppingCart className="h-5 w-5 mr-2" />
+            장바구니
+            {cart.length > 0 && (
+              <Badge className="ml-2 bg-accent">{cart.length}</Badge>
+            )}
+          </Button>
+        )}
       </div>
 
       {/* URL 입력 섹션 */}
@@ -694,134 +782,125 @@ const Analyze = () => {
                       </div>
                     </div>
 
-                      {/* 가격 견적 & 선택/개수 조절 */}
-                      <div className="pt-4 border-t border-border space-y-4">
-                        <div>
-                          <p className="text-sm font-semibold mb-3">콘텐츠 타입별 견적 (개당)</p>
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className={`p-3 rounded-lg text-center transition-all ${
-                              channel.contentType === "후기형" 
-                                ? 'bg-accent text-accent-foreground' 
-                                : 'bg-muted'
-                            }`}>
-                              <div className="text-xs mb-1">후기형</div>
-                              <div className="font-bold">{channel.pricing.review.toLocaleString()}원</div>
-                            </div>
-                            <div className={`p-3 rounded-lg text-center transition-all ${
-                              channel.contentType === "질문형" 
-                                ? 'bg-accent text-accent-foreground' 
-                                : 'bg-muted'
-                            }`}>
-                              <div className="text-xs mb-1">질문형</div>
-                              <div className="font-bold">{channel.pricing.question.toLocaleString()}원</div>
-                            </div>
-                            <div className={`p-3 rounded-lg text-center transition-all ${
-                              channel.contentType === "핫딜형" 
-                                ? 'bg-accent text-accent-foreground' 
-                                : 'bg-muted'
-                            }`}>
-                              <div className="text-xs mb-1">핫딜형</div>
-                              <div className="font-bold">{channel.pricing.hotdeal.toLocaleString()}원</div>
-                            </div>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-2 text-center">
-                            현재 추천: <span className="font-semibold text-accent">{channel.contentType}</span>
-                          </p>
-                        </div>
+                       {/* 콘텐츠 타입 선택 */}
+                       <div className="pt-4 border-t border-border space-y-4">
+                         <div>
+                           <p className="text-sm font-semibold mb-3">콘텐츠 타입 선택</p>
+                           <Tabs 
+                             value={isSelected ? selectedContentTypes.get(idx) || channel.contentType : channel.contentType}
+                             onValueChange={(value) => {
+                               if (isSelected) {
+                                 updateContentType(idx, value as "후기형" | "질문형" | "핫딜형");
+                               }
+                             }}
+                           >
+                             <TabsList className="grid w-full grid-cols-3">
+                               <TabsTrigger value="후기형" disabled={!isSelected}>
+                                 <div className="text-center">
+                                   <div className="text-xs">후기형</div>
+                                   <div className="font-bold text-xs">{channel.pricing.review.toLocaleString()}원</div>
+                                 </div>
+                               </TabsTrigger>
+                               <TabsTrigger value="질문형" disabled={!isSelected}>
+                                 <div className="text-center">
+                                   <div className="text-xs">질문형</div>
+                                   <div className="font-bold text-xs">{channel.pricing.question.toLocaleString()}원</div>
+                                 </div>
+                               </TabsTrigger>
+                               <TabsTrigger value="핫딜형" disabled={!isSelected}>
+                                 <div className="text-center">
+                                   <div className="text-xs">핫딜형</div>
+                                   <div className="font-bold text-xs">{channel.pricing.hotdeal.toLocaleString()}원</div>
+                                 </div>
+                               </TabsTrigger>
+                             </TabsList>
+                           </Tabs>
+                           {!isSelected && (
+                             <p className="text-xs text-muted-foreground mt-2 text-center">
+                               AI 추천: <span className="font-semibold text-accent">{channel.contentType}</span>
+                             </p>
+                           )}
+                         </div>
 
-                        {/* 선택 및 개수 조절 */}
-                        {isSelected ? (
-                          <div className="flex items-center justify-between p-4 rounded-lg bg-accent/10 border border-accent">
-                            <div className="flex items-center gap-3">
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateChannelCount(idx, -1);
-                                }}
-                                disabled={postCount <= 1}
-                              >
-                                <Minus className="h-4 w-4" />
-                              </Button>
-                              <div className="text-center min-w-[80px]">
-                                <div className="text-2xl font-bold text-accent">{postCount}</div>
-                                <div className="text-xs text-muted-foreground">포스팅</div>
-                              </div>
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateChannelCount(idx, 1);
-                                }}
-                                disabled={postCount >= 50}
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            <Button
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleChannelSelection(idx);
-                              }}
-                            >
-                              선택 취소
-                            </Button>
-                          </div>
-                        ) : (
-                          <Button
-                            className="w-full"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleChannelSelection(idx);
-                            }}
-                          >
-                            이 채널 선택하기
-                          </Button>
-                        )}
-                      </div>
+                         {/* 선택 및 개수 조절 */}
+                         {isSelected ? (
+                           <div className="space-y-3">
+                             <div className="flex items-center justify-between p-4 rounded-lg bg-accent/10 border border-accent">
+                               <div className="flex items-center gap-3">
+                                 <Button
+                                   size="icon"
+                                   variant="outline"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     updateChannelCount(idx, -1);
+                                   }}
+                                   disabled={postCount <= 1}
+                                 >
+                                   <Minus className="h-4 w-4" />
+                                 </Button>
+                                 <div className="text-center min-w-[80px]">
+                                   <div className="text-2xl font-bold text-accent">{postCount}</div>
+                                   <div className="text-xs text-muted-foreground">포스팅</div>
+                                 </div>
+                                 <Button
+                                   size="icon"
+                                   variant="outline"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     updateChannelCount(idx, 1);
+                                   }}
+                                   disabled={postCount >= 50}
+                                 >
+                                   <Plus className="h-4 w-4" />
+                                 </Button>
+                               </div>
+                               <Button
+                                 variant="outline"
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   toggleChannelSelection(idx);
+                                 }}
+                               >
+                                 선택 취소
+                               </Button>
+                             </div>
+                           </div>
+                         ) : (
+                           <Button
+                             className="w-full"
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               toggleChannelSelection(idx);
+                             }}
+                           >
+                             이 채널 선택하기
+                           </Button>
+                         )}
+                       </div>
                     </CardContent>
                   </Card>
                 );
               })}
 
-              {/* 결제 요약 */}
+              {/* 선택 요약 & 장바구니 담기 */}
               {selectedChannels.size > 0 && (
                 <Card className="border-2 border-accent bg-gradient-to-r from-accent/5 to-primary/5">
                   <CardContent className="pt-6">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-2">선택한 채널 요약</h3>
+                        <h3 className="text-xl font-bold mb-2">현재 선택 내역</h3>
                         <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                           <span>선택된 채널: <span className="font-bold text-accent">{selectedChannels.size}개</span></span>
                           <span>•</span>
                           <span>총 포스팅: <span className="font-bold text-accent">{getTotalPosts()}개</span></span>
-                          {selectedChannels.size > 1 && (
-                            <>
-                              <span>•</span>
-                              <span className="text-accent font-semibold">
-                                패키지 할인 10% 적용 🎉
-                              </span>
-                            </>
-                          )}
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-6">
                         <div className="text-right">
-                          <div className="text-sm text-muted-foreground">총 견적</div>
-                          {selectedChannels.size > 1 && (
-                            <div className="text-sm text-muted-foreground line-through">
-                              {calculateTotal().toLocaleString()}원
-                            </div>
-                          )}
+                          <div className="text-sm text-muted-foreground">총 금액</div>
                           <div className="text-3xl font-bold text-accent">
-                            {selectedChannels.size > 1 
-                              ? Math.floor(calculateTotal() * 0.9).toLocaleString()
-                              : calculateTotal().toLocaleString()
-                            }원
+                            {calculateTotal().toLocaleString()}원
                           </div>
                         </div>
                         
@@ -830,13 +909,107 @@ const Analyze = () => {
                           className="h-16 px-8"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleProceedToPayment();
+                            addToCart();
                           }}
                         >
-                          다음 단계로
+                          <ShoppingCart className="h-5 w-5 mr-2" />
+                          장바구니 담기
                         </Button>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* 장바구니 */}
+              {showCart && cart.length > 0 && (
+                <Card className="border-2 border-primary bg-gradient-to-r from-primary/5 to-accent/5">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>장바구니</span>
+                      <Button variant="ghost" onClick={() => setShowCart(false)}>닫기</Button>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {cart.map((item, index) => (
+                      <Card key={index} className="border">
+                        <CardContent className="pt-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-bold text-lg mb-1">{item.channelName}</h4>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Badge variant="outline">{item.contentType}</Badge>
+                                <span>•</span>
+                                <span>{item.postCount}개 포스팅</span>
+                                <span>•</span>
+                                <span>{item.pricePerPost.toLocaleString()}원/개</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <div className="text-2xl font-bold text-accent">
+                                  {item.totalPrice.toLocaleString()}원
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeFromCart(index)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+
+                    <Card className="border-2 border-accent bg-accent/5">
+                      <CardContent className="pt-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <div className="text-sm text-muted-foreground mb-1">총 항목</div>
+                            <div className="font-bold">{cart.length}개</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-muted-foreground mb-1">합계</div>
+                            <div className="text-sm text-muted-foreground line-through">
+                              {calculateCartTotal().toLocaleString()}원
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {cart.length > 1 && (
+                          <div className="mb-4 p-3 bg-accent/10 rounded-lg">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-accent font-semibold">패키지 할인 10% 🎉</span>
+                              <span className="text-accent font-bold">
+                                -{Math.floor(calculateCartTotal() * 0.1).toLocaleString()}원
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between pt-4 border-t">
+                          <div>
+                            <div className="text-sm text-muted-foreground">최종 결제 금액</div>
+                            <div className="text-3xl font-bold text-accent">
+                              {cart.length > 1 
+                                ? Math.floor(calculateCartTotal() * 0.9).toLocaleString()
+                                : calculateCartTotal().toLocaleString()
+                              }원
+                            </div>
+                          </div>
+                          <Button
+                            size="lg"
+                            className="h-16 px-8"
+                            onClick={handleProceedToPayment}
+                          >
+                            결제하기
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </CardContent>
                 </Card>
               )}
