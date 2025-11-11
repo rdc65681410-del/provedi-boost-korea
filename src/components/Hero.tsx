@@ -39,8 +39,8 @@ const Hero = () => {
           </div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            맘카페 마케팅,<br />
-            이제 <span className="text-accent">자동으로</span> 실행하세요
+            맘카페 아직도<br />
+            <span className="text-accent">감으로</span> 홍보하나요?
           </h1>
           
           <p className="text-lg md:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed">
