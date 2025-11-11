@@ -613,14 +613,11 @@ const Analyze = () => {
             </CardContent>
           </Card>
 
-          {/* 맘카페 포스팅 현황 */}
-          <CafePostingStatus cafePostingStatus={analysisResult.cafePostingStatus} />
-
-          {/* 경쟁사 브랜드 키워드 노출 지도 */}
-          <CompetitorKeywordMap competitorBrands={analysisResult.competitorBrands} />
-
-          {/* 카페별 노출 전략 */}
-          <CafeExposureHeatmap cafeExposureStrategy={analysisResult.cafeExposureStrategy} />
+          {/* 맘카페 포스팅 현황 - 삭제됨 */}
+          
+          {/* 경쟁사 브랜드 키워드 노출 지도 - 삭제됨 */}
+          
+          {/* 카페별 노출 전략 - 삭제됨 */}
 
           {/* AI 생성 콘텐츠 샘플 */}
           <Card className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
@@ -650,30 +647,9 @@ const Analyze = () => {
             </CardContent>
           </Card>
 
-          {/* 채널별 성공률 차트 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <BarChart3 className="h-5 w-5 mr-2" />
-                채널별 성공률
-              </CardTitle>
-              <CardDescription>최근 3개월 캠페인 성공률</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={successRateData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <RechartsTooltip />
-                  <Bar dataKey="rate" fill="hsl(var(--accent))" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          {/* 채널별 성공률 차트 - 삭제됨 */}
 
-          {/* 시간대별 성과 예측 */}
-          <TimePerformancePredictor />
+          {/* 시간대별 성과 예측 - 삭제됨 */}
 
           {/* 추천 채널 */}
           <Card>
