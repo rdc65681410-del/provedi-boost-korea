@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
 import Process from "@/components/Process";
 import PlatformPreview from "@/components/PlatformPreview";
+import { AIProductNaming } from "@/components/AIProductNaming";
 import LiveDemo from "@/components/LiveDemo";
 import Features from "@/components/Features";
 import Pricing from "@/components/Pricing";
@@ -16,6 +17,7 @@ const Index = () => {
       <Stats />
       <Process />
       <PlatformPreview />
+      <AIProductNaming />
       <LiveDemo />
       <Features />
       <Pricing />
