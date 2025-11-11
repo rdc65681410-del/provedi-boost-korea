@@ -109,68 +109,122 @@ const Analyze = () => {
 
       // AI 응답 데이터 처리
       const aiAnalysis = data.analysis;
+
+      // 채널 데이터가 없을 경우 백엔드 DB에서 베이스 추천 생성
+      let channelsFromAI: any[] = Array.isArray(aiAnalysis.channels) ? aiAnalysis.channels : [];
+      if (!channelsFromAI || channelsFromAI.length === 0) {
+        const { data: cafes, error: cafesError } = await supabase
+          .from('mom_cafe_channels')
+          .select('name,members,activity_level,success_rate,pricing,avg_engagement_rate,avg_views,best_content_types,keywords')
+          .limit(8);
+
+        if (!cafesError && cafes) {
+          const productKeywords: string[] = Array.isArray(aiAnalysis.product?.keywords)
+            ? aiAnalysis.product.keywords
+            : [];
+
+          const scoreFrom = (n?: number | null) => {
+            const s = Number(n ?? 0);
+            if (s > 0 && s <= 100) return Math.round(s);
+            if (s > 1 && s <= 5) return Math.round(s * 20);
+            if (s > 0 && s < 1) return Math.round(s * 100);
+            return 80;
+          };
+          const gradeFrom = (s: number) => (s >= 90 ? 'A+' : s >= 85 ? 'A' : s >= 75 ? 'B+' : 'B');
+
+          channelsFromAI = cafes
+            .sort((a: any, b: any) => Number(b.success_rate ?? b.avg_engagement_rate ?? 0) - Number(a.success_rate ?? a.avg_engagement_rate ?? 0))
+            .slice(0, 5)
+            .map((row: any) => {
+              const pricing = (row.pricing || {}) as any;
+              const review = Number(pricing.review ?? 120000);
+              const question = Number(pricing.question ?? review);
+              const hotdeal = Number(pricing.hotdeal ?? Math.round(review * 1.1));
+              const score = scoreFrom(row.success_rate ?? (Number(row.avg_engagement_rate ?? 0) * 100));
+              const matchCount = productKeywords.filter((k: string) => Array.isArray(row.keywords) && row.keywords.includes(k)).length;
+              const reason = matchCount > 0
+                ? `타깃 키워드 ${matchCount}개 일치 · 활성도 ${row.activity_level}`
+                : `활성도 ${row.activity_level} · 평균 조회수 ${(row.avg_views ?? 0).toLocaleString()}회`;
+
+              return {
+                name: row.name,
+                score,
+                members: `${(row.members ?? 0).toLocaleString()}명`,
+                activityLevel: row.activity_level ?? '중간',
+                cost: `${review.toLocaleString()}원~`,
+                contentType: (row.best_content_types?.[0] as '후기형' | '질문형' | '핫딜형') ?? '후기형',
+                reason,
+                rating: gradeFrom(score),
+                logo: '☕️',
+                pricing: { review, question, hotdeal },
+                successRate: Math.round(Number(row.success_rate ?? (Number(row.avg_engagement_rate ?? 0) * 100))),
+                recommendedPosts: 10,
+              } as ChannelRecommendation;
+            });
+        }
+      }
       
       // 기존 mock 데이터 형식으로 변환 (UI 호환성 유지)
       const formattedResult = {
         product: aiAnalysis.product || {
-          name: "분석된 상품",
-          category: "기타",
-          priceRange: "확인 필요",
-          keywords: aiAnalysis.product?.keywords || ["상품", "추천"],
-          avgPrice: aiAnalysis.product?.avgPrice || 0
+          name: '분석된 상품',
+          category: '기타',
+          priceRange: '확인 필요',
+          keywords: aiAnalysis.product?.keywords || ['상품', '추천'],
+          avgPrice: aiAnalysis.product?.avgPrice || 0,
         },
         overallScore: aiAnalysis.overallScore || 75,
-        scoreLevel: aiAnalysis.scoreLevel || "우수",
+        scoreLevel: aiAnalysis.scoreLevel || '우수',
         reviewAnalysis: aiAnalysis.reviewAnalysis || {
           totalReviews: 0,
           positiveCount: 0,
           negativeCount: 0,
-          positiveReviews: ["긍정적인 리뷰가 많습니다."],
-          negativeReviews: ["일부 개선이 필요한 점이 있습니다."]
+          positiveReviews: ['긍정적인 리뷰가 많습니다.'],
+          negativeReviews: ['일부 개선이 필요한 점이 있습니다.'],
         },
         competitor: aiAnalysis.competitor || {
           marketShare: 20,
           avgPrice: 40000,
-          topBrands: ["브랜드A", "브랜드B"],
-          competitionLevel: "중간",
-          pricePosition: "경쟁력 있음"
+          topBrands: ['브랜드A', '브랜드B'],
+          competitionLevel: '중간',
+          pricePosition: '경쟁력 있음',
         },
         roi: aiAnalysis.roi || {
           estimatedInvestment: 300000,
           expectedRevenue: 1000000,
           roi: 233,
-          breakEven: "약 2-3주",
-          profitMargin: 700000
+          breakEven: '약 2-3주',
+          profitMargin: 700000,
         },
         successCase: aiAnalysis.successCase || {
-          productName: "유사 상품",
-          category: "동일 카테고리",
-          revenue: "월 2,000만원",
-          period: "3개월",
+          productName: '유사 상품',
+          category: '동일 카테고리',
+          revenue: '월 2,000만원',
+          period: '3개월',
           channels: 5,
-          engagement: "7.5%"
+          engagement: '7.5%',
         },
         topKeywords: aiAnalysis.topKeywords || [],
-        channels: aiAnalysis.channels || [],
+        channels: channelsFromAI,
         contentSamples: aiAnalysis.contentSamples || [],
         timing: aiAnalysis.timing || {
-          bestTimes: ["오전 10-11시", "오후 2-3시"],
-          bestDays: ["월요일", "수요일"]
+          bestTimes: ['오전 10-11시', '오후 2-3시'],
+          bestDays: ['월요일', '수요일'],
         },
         insights: aiAnalysis.insights || {
-          competitionLevel: "중간",
-          seasonality: "사계절",
-          expectedReach: "5,000-8,000명",
-          estimatedEngagement: "4.5-6.0%"
+          competitionLevel: '중간',
+          seasonality: '사계절',
+          expectedReach: '5,000-8,000명',
+          estimatedEngagement: '4.5-6.0%',
         },
         // 새로 추가된 데이터
         cafePostingStatus: aiAnalysis.cafePostingStatus || {},
         competitorBrands: aiAnalysis.competitorBrands || [],
-        cafeExposureStrategy: aiAnalysis.cafeExposureStrategy || []
+        cafeExposureStrategy: aiAnalysis.cafeExposureStrategy || [],
       };
       
       setAnalysisResult(formattedResult);
-      toast.success("AI 분석이 완료되었습니다!");
+      toast.success('AI 분석이 완료되었습니다!');
     } catch (error: any) {
       console.error("분석 실패:", error);
       toast.error(error.message || "분석에 실패했습니다. 다시 시도해주세요.");
