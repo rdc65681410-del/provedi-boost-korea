@@ -413,9 +413,9 @@ const Analyze = () => {
   })) || [];
 
   return (
-    <div className="flex gap-6">
+    <div className="space-y-6">
       {/* 메인 콘텐츠 영역 */}
-      <div className="flex-1 space-y-6">
+      <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">링크 분석</h1>
           <p className="text-muted-foreground">
@@ -1274,10 +1274,10 @@ const Analyze = () => {
       )}
       </div>
 
-      {/* 고정 장바구니 영역 */}
+      {/* 장바구니 영역 */}
       {analysisResult && (
-        <div className="w-96 flex-shrink-0">
-          <div className="sticky top-6 space-y-4">
+        <div className="w-full">
+          <div className="space-y-4">
             <Card className="border-2 border-primary bg-gradient-to-r from-primary/5 to-accent/5">
               <CardHeader>
                 <CardTitle className="flex items-center">
