@@ -9,7 +9,8 @@ import {
   TrendingUp,
   Users,
   Eye,
-  MessageCircle
+  MessageCircle,
+  Store
 } from "lucide-react";
 import dashboardPreview from "@/assets/dashboard-preview.jpg";
 
@@ -27,10 +28,14 @@ const PlatformPreview = () => {
         </div>
 
         <Tabs defaultValue="analyze" className="max-w-6xl mx-auto">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8">
             <TabsTrigger value="analyze" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
               링크 분석
+            </TabsTrigger>
+            <TabsTrigger value="recommendations" className="flex items-center gap-2">
+              <Store className="h-4 w-4" />
+              맞춤 카페추천
             </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -102,6 +107,81 @@ const PlatformPreview = () => {
                     <div className="text-center p-8">
                       <Target className="h-16 w-16 text-accent mx-auto mb-4" />
                       <p className="text-muted-foreground">링크 분석 화면 미리보기</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* 맞춤 카페추천 탭 */}
+          <TabsContent value="recommendations" className="space-y-6 animate-fade-in">
+            <Card className="p-6 bg-card border-2 border-primary">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <Badge className="bg-primary text-primary-foreground">
+                    AI 매칭 시스템
+                  </Badge>
+                  <h3 className="text-2xl font-bold text-foreground">
+                    데이터 기반 최적 카페 추천
+                  </h3>
+                  <p className="text-muted-foreground">
+                    상품 특성과 타겟층을 분석하여 가장 효과적인 맘카페를 
+                    AI가 자동으로 매칭해드립니다.
+                  </p>
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Store className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">카페 매칭도 점수</p>
+                        <p className="text-sm text-muted-foreground">
+                          98점 이상의 최고 매칭 카페 추천
+                        </p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Users className="h-4 w-4 text-accent" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">타겟층 분석</p>
+                        <p className="text-sm text-muted-foreground">
+                          연령대, 관심사, 구매력 기반 타겟팅
+                        </p>
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-chart-3/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <TrendingUp className="h-4 w-4 text-chart-3" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">활성도 분석</p>
+                        <p className="text-sm text-muted-foreground">
+                          실시간 카페 활동 데이터 기반 추천
+                        </p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div className="relative rounded-lg overflow-hidden border border-border bg-muted">
+                  <div className="aspect-video flex flex-col items-center justify-center p-6">
+                    <Store className="h-16 w-16 text-primary mx-auto mb-4" />
+                    <p className="text-muted-foreground text-center mb-4">맞춤 카페 추천 결과</p>
+                    <div className="w-full space-y-2">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/80">
+                        <span className="text-sm font-semibold">강남맘 육아정보</span>
+                        <Badge className="bg-primary">98점</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/80">
+                        <span className="text-sm font-semibold">서초 워킹맘 모임</span>
+                        <Badge variant="secondary">94점</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-background/80">
+                        <span className="text-sm font-semibold">분당 맘카페</span>
+                        <Badge variant="secondary">91점</Badge>
+                      </div>
                     </div>
                   </div>
                 </div>
