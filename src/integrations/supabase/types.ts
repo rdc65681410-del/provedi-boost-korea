@@ -14,6 +14,217 @@ export type Database = {
   }
   public: {
     Tables: {
+      channel_exposures: {
+        Row: {
+          analysis_id: string | null
+          avg_engagement: number | null
+          avg_views: number | null
+          best_time: string | null
+          cafe_name: string | null
+          created_at: string | null
+          id: string
+          keyword: string | null
+          post_count: number | null
+        }
+        Insert: {
+          analysis_id?: string | null
+          avg_engagement?: number | null
+          avg_views?: number | null
+          best_time?: string | null
+          cafe_name?: string | null
+          created_at?: string | null
+          id?: string
+          keyword?: string | null
+          post_count?: number | null
+        }
+        Update: {
+          analysis_id?: string | null
+          avg_engagement?: number | null
+          avg_views?: number | null
+          best_time?: string | null
+          cafe_name?: string | null
+          created_at?: string | null
+          id?: string
+          keyword?: string | null
+          post_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "channel_exposures_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "product_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competitor_keywords: {
+        Row: {
+          analysis_id: string | null
+          avg_views: number | null
+          cafe_name: string | null
+          competitor_brand: string | null
+          created_at: string | null
+          exposure_count: number | null
+          id: string
+          keyword: string | null
+          ranking: number | null
+          trend: string | null
+        }
+        Insert: {
+          analysis_id?: string | null
+          avg_views?: number | null
+          cafe_name?: string | null
+          competitor_brand?: string | null
+          created_at?: string | null
+          exposure_count?: number | null
+          id?: string
+          keyword?: string | null
+          ranking?: number | null
+          trend?: string | null
+        }
+        Update: {
+          analysis_id?: string | null
+          avg_views?: number | null
+          cafe_name?: string | null
+          competitor_brand?: string | null
+          created_at?: string | null
+          exposure_count?: number | null
+          id?: string
+          keyword?: string | null
+          ranking?: number | null
+          trend?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitor_keywords_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "product_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mom_cafe_channels: {
+        Row: {
+          activity_level: string | null
+          avg_engagement_rate: number | null
+          avg_views: number | null
+          best_content_types: string[] | null
+          category: string | null
+          created_at: string | null
+          id: string
+          keywords: string[] | null
+          members: number | null
+          name: string
+          pricing: Json | null
+          success_rate: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          activity_level?: string | null
+          avg_engagement_rate?: number | null
+          avg_views?: number | null
+          best_content_types?: string[] | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          keywords?: string[] | null
+          members?: number | null
+          name: string
+          pricing?: Json | null
+          success_rate?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          activity_level?: string | null
+          avg_engagement_rate?: number | null
+          avg_views?: number | null
+          best_content_types?: string[] | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          keywords?: string[] | null
+          members?: number | null
+          name?: string
+          pricing?: Json | null
+          success_rate?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      product_analyses: {
+        Row: {
+          cafe_exposure_data: Json | null
+          category: string | null
+          channel_recommendations: Json | null
+          competitor_analysis: Json | null
+          competitor_keywords: Json | null
+          content_samples: Json | null
+          created_at: string | null
+          estimated_roi: number | null
+          id: string
+          keyword_analysis: Json | null
+          negative_count: number | null
+          overall_score: number | null
+          positive_count: number | null
+          price_range: string | null
+          product_name: string | null
+          product_url: string
+          score_level: string | null
+          timing_analysis: Json | null
+          total_reviews: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cafe_exposure_data?: Json | null
+          category?: string | null
+          channel_recommendations?: Json | null
+          competitor_analysis?: Json | null
+          competitor_keywords?: Json | null
+          content_samples?: Json | null
+          created_at?: string | null
+          estimated_roi?: number | null
+          id?: string
+          keyword_analysis?: Json | null
+          negative_count?: number | null
+          overall_score?: number | null
+          positive_count?: number | null
+          price_range?: string | null
+          product_name?: string | null
+          product_url: string
+          score_level?: string | null
+          timing_analysis?: Json | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cafe_exposure_data?: Json | null
+          category?: string | null
+          channel_recommendations?: Json | null
+          competitor_analysis?: Json | null
+          competitor_keywords?: Json | null
+          content_samples?: Json | null
+          created_at?: string | null
+          estimated_roi?: number | null
+          id?: string
+          keyword_analysis?: Json | null
+          negative_count?: number | null
+          overall_score?: number | null
+          positive_count?: number | null
+          price_range?: string | null
+          product_name?: string | null
+          product_url?: string
+          score_level?: string | null
+          timing_analysis?: Json | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
