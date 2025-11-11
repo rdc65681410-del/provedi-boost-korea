@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users, Clock, DollarSign } from "lucide-react";
+import dashboardPreview from "@/assets/dashboard-preview.jpg";
 
 const demoChannels = [
   {
@@ -45,28 +46,18 @@ const LiveDemo = () => {
           </p>
         </div>
 
-        {/* Demo Product Card */}
-        <div className="max-w-4xl mx-auto mb-12">
-          <Card className="p-6 bg-gradient-card border-border">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="w-full md:w-48 h-48 bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
-                상품 이미지
-              </div>
-              <div className="flex-1">
-                <Badge className="mb-3">유아 장난감</Badge>
-                <h3 className="text-2xl font-bold text-foreground mb-2">
-                  프리미엄 원목 블록 세트
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  가격대: 50,000-80,000원 | 타겟: 25-40세 부모
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">원목장난감</Badge>
-                  <Badge variant="outline">교육완구</Badge>
-                  <Badge variant="outline">유아발달</Badge>
-                  <Badge variant="outline">친환경</Badge>
-                </div>
-              </div>
+        {/* Dashboard Preview */}
+        <div className="max-w-5xl mx-auto mb-12">
+          <Card className="p-8 bg-gradient-card border-border overflow-hidden">
+            <h3 className="text-xl font-bold text-center text-foreground mb-6">
+              링크 분석 화면 미리보기
+            </h3>
+            <div className="rounded-xl overflow-hidden shadow-2xl border border-border">
+              <img 
+                src={dashboardPreview} 
+                alt="대시보드 미리보기" 
+                className="w-full h-auto"
+              />
             </div>
           </Card>
         </div>
