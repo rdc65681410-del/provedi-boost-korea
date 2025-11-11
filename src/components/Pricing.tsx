@@ -4,51 +4,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const selfMarketingPlans = [
-  {
-    name: "라이트",
-    price: "99,000원",
-    period: "/월",
-    description: "시작하는 셀프 마케터",
-    features: [
-      "상품 분석 (월 10회)",
-      "맞춤 카페 추천 (5개)",
-      "포스팅 직접 작성",
-      "AI 콘텐츠 생성 지원",
-      "기본 통계 리포트",
-    ],
-  },
-  {
-    name: "스탠다드",
-    price: "199,000원",
-    period: "/월",
-    description: "적극적인 셀프 마케터",
-    features: [
-      "상품 분석 (월 30회)",
-      "맞춤 카페 추천 (10개)",
-      "포스팅 직접 작성",
-      "AI 콘텐츠 생성 무제한",
-      "시간 최적화 추천",
-      "상세 성과 리포트",
-    ],
-    popular: true,
-  },
-  {
-    name: "프리미엄",
-    price: "349,000원",
-    period: "/월",
-    description: "전문 셀프 마케터",
-    features: [
-      "상품 분석 무제한",
-      "맞춤 카페 추천 (20개+)",
-      "포스팅 직접 작성",
-      "AI 콘텐츠 생성 무제한",
-      "고급 시간 최적화",
-      "A/B 테스트 기능",
-      "전담 계정 매니저",
-    ],
-  },
-];
+const selfMarketingPlan = {
+  name: "셀프 마케팅",
+  description: "내가 직접 선택하는 맞춤 마케팅",
+  features: [
+    "분석 결과에서 맞춤 카페 직접 선택",
+    "원하는 포스팅 개수 선택",
+    "선택한 만큼만 결제",
+    "AI 콘텐츠 생성 지원",
+    "시간 최적화 추천",
+    "기본 성과 리포트",
+  ],
+};
 
 const agencyPlans = [
   {
@@ -124,57 +91,98 @@ const Pricing = () => {
 
           {/* 셀프마케팅 요금제 */}
           <TabsContent value="self" className="animate-fade-in">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {selfMarketingPlans.map((plan, index) => (
-                <Card 
-                  key={index} 
-                  className={`relative ${
-                    plan.popular 
-                      ? 'border-accent shadow-xl scale-105 z-10' 
-                      : 'border-border'
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                        인기
-                      </span>
+            <div className="max-w-2xl mx-auto">
+              <Card className="border-accent shadow-xl">
+                <CardHeader className="text-center pb-8">
+                  <CardTitle className="text-3xl mb-2">{selfMarketingPlan.name}</CardTitle>
+                  <CardDescription className="text-lg mb-6">
+                    {selfMarketingPlan.description}
+                  </CardDescription>
+                  <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-6">
+                    <p className="text-sm text-muted-foreground mb-2">유연한 결제 방식</p>
+                    <p className="text-2xl font-bold text-foreground mb-1">
+                      선택한 만큼만 결제
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      카페와 포스팅 개수를 자유롭게 선택하세요
+                    </p>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="space-y-6">
+                  <div className="bg-muted/50 rounded-lg p-6">
+                    <h4 className="font-semibold text-foreground mb-4 text-center">이용 방법</h4>
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 font-bold">
+                          1
+                        </div>
+                        <div>
+                          <p className="font-semibold text-foreground">상품 분석</p>
+                          <p className="text-sm text-muted-foreground">
+                            상품 링크를 입력하고 AI 분석 결과 확인
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 font-bold">
+                          2
+                        </div>
+                        <div>
+                          <p className="font-semibold text-foreground">맞춤 카페 선택</p>
+                          <p className="text-sm text-muted-foreground">
+                            추천된 카페 중 원하는 카페를 직접 선택
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center flex-shrink-0 font-bold">
+                          3
+                        </div>
+                        <div>
+                          <p className="font-semibold text-foreground">포스팅 개수 선택</p>
+                          <p className="text-sm text-muted-foreground">
+                            각 카페별 포스팅 개수를 자유롭게 설정
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center flex-shrink-0 font-bold">
+                          4
+                        </div>
+                        <div>
+                          <p className="font-semibold text-foreground">결제 및 시작</p>
+                          <p className="text-sm text-muted-foreground">
+                            선택한 내용에 따라 자동 계산된 금액으로 결제
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  
-                  <CardHeader className="text-center pb-8">
-                    <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
-                    <CardDescription className="text-base mb-4">
-                      {plan.description}
-                    </CardDescription>
-                    <div className="flex items-baseline justify-center">
-                      <span className="text-4xl font-bold text-foreground">{plan.price}</span>
-                      <span className="text-muted-foreground ml-1">{plan.period}</span>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {plan.features.map((feature, featureIndex) => (
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-foreground text-center mb-4">포함된 기능</h4>
+                    {selfMarketingPlan.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-start space-x-3">
                         <Check className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
                         <span className="text-sm text-foreground">{feature}</span>
                       </div>
                     ))}
-                  </CardContent>
-                  
-                  <CardFooter>
-                    <Link to="/auth" className="w-full">
-                      <Button 
-                        variant={plan.popular ? "hero" : "outline"} 
-                        size="lg" 
-                        className="w-full"
-                      >
-                        시작하기
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
+                  </div>
+                </CardContent>
+                
+                <CardFooter>
+                  <Link to="/auth" className="w-full">
+                    <Button 
+                      variant="hero" 
+                      size="lg" 
+                      className="w-full"
+                    >
+                      지금 시작하기
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
             </div>
           </TabsContent>
 
