@@ -1,6 +1,64 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, TrendingUp, Users, MessageSquare } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+const recommendedCafes = [
+  {
+    id: 1,
+    name: "me****",
+    badge: "프로페셔널",
+    category: "뷰티/패션",
+    demographic: "20대 중후반",
+    stats: {
+      reach: 1985,
+      likes: 1816,
+      comments: 572
+    }
+  },
+  {
+    id: 2,
+    name: "ju****",
+    badge: "인기채널",
+    category: "육아/교육",
+    demographic: "30대 초중반",
+    stats: {
+      reach: 2340,
+      likes: 2120,
+      comments: 680
+    }
+  },
+  {
+    id: 3,
+    name: "ki****",
+    badge: "신뢰채널",
+    category: "생활/육아",
+    demographic: "30대 중후반",
+    stats: {
+      reach: 1750,
+      likes: 1580,
+      comments: 490
+    }
+  },
+  {
+    id: 4,
+    name: "ha****",
+    badge: "추천채널",
+    category: "패션/뷰티",
+    demographic: "20대 후반",
+    stats: {
+      reach: 2100,
+      likes: 1950,
+      comments: 615
+    }
+  }
+];
 
 const CafeMatching = () => {
   return (
@@ -22,68 +80,100 @@ const CafeMatching = () => {
             <div className="text-[300px] font-bold text-primary">G</div>
           </div>
 
-          {/* Main content card */}
-          <Card className="relative z-10 p-8 md:p-12 bg-card/95 backdrop-blur-sm border-2">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              {/* Profile Section */}
-              <div className="flex flex-col items-center md:items-start space-y-6">
-                <div className="flex items-center space-x-4 p-6 bg-primary/5 border-2 border-primary rounded-3xl w-full max-w-md">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-2xl font-bold">
-                    맘
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl font-bold">me****</span>
-                      <Badge variant="default" className="bg-primary">
-                        <Star className="w-3 h-3 mr-1" />
-                        프로페셔널
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      뷰티/패션 • 20대 중후반
-                    </p>
-                  </div>
-                </div>
+          {/* Carousel for multiple cafes */}
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="relative z-10 w-full"
+          >
+            <CarouselContent>
+              {recommendedCafes.map((cafe) => (
+                <CarouselItem key={cafe.id}>
+                  <Card className="p-8 md:p-12 bg-card/95 backdrop-blur-sm border-2">
+                    <div className="grid md:grid-cols-2 gap-8 items-center">
+                      {/* Profile Section */}
+                      <div className="flex flex-col items-center md:items-start space-y-6">
+                        <div className="flex items-center space-x-4 p-6 bg-primary/5 border-2 border-primary rounded-3xl w-full max-w-md animate-fade-in">
+                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-2xl font-bold">
+                            맘
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xl font-bold">{cafe.name}</span>
+                              <Badge variant="default" className="bg-primary">
+                                <Star className="w-3 h-3 mr-1" />
+                                {cafe.badge}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {cafe.category} • {cafe.demographic}
+                            </p>
+                          </div>
+                        </div>
 
-                <p className="text-muted-foreground text-center md:text-left">
-                  AI가 분석한 최적의 카페 채널과 맞춤 카페를 매칭해드립니다
-                </p>
-              </div>
+                        <p className="text-muted-foreground text-center md:text-left">
+                          AI가 분석한 최적의 카페 채널과 맞춤 카페를 매칭해드립니다
+                        </p>
+                      </div>
 
-              {/* Stats Section */}
-              <div className="space-y-4">
-                <Card className="p-6 flex items-center justify-between hover:shadow-lg transition-shadow bg-background/80">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-primary" />
-                    </div>
-                    <span className="text-lg font-medium">평균 도달</span>
-                  </div>
-                  <span className="text-2xl font-bold text-primary">1,985</span>
-                </Card>
+                      {/* Stats Section */}
+                      <div className="space-y-4">
+                        <Card className="p-6 flex items-center justify-between hover:shadow-lg transition-shadow bg-background/80 animate-fade-in">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <TrendingUp className="w-5 h-5 text-primary" />
+                            </div>
+                            <span className="text-lg font-medium">평균 도달</span>
+                          </div>
+                          <span className="text-2xl font-bold text-primary">
+                            {cafe.stats.reach.toLocaleString()}
+                          </span>
+                        </Card>
 
-                <Card className="p-6 flex items-center justify-between hover:shadow-lg transition-shadow bg-background/80">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Users className="w-5 h-5 text-primary" />
-                    </div>
-                    <span className="text-lg font-medium">평균 좋아요</span>
-                  </div>
-                  <span className="text-2xl font-bold text-primary">1,816</span>
-                </Card>
+                        <Card className="p-6 flex items-center justify-between hover:shadow-lg transition-shadow bg-background/80 animate-fade-in">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Users className="w-5 h-5 text-primary" />
+                            </div>
+                            <span className="text-lg font-medium">평균 좋아요</span>
+                          </div>
+                          <span className="text-2xl font-bold text-primary">
+                            {cafe.stats.likes.toLocaleString()}
+                          </span>
+                        </Card>
 
-                <Card className="p-6 flex items-center justify-between hover:shadow-lg transition-shadow bg-background/80">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <MessageSquare className="w-5 h-5 text-primary" />
+                        <Card className="p-6 flex items-center justify-between hover:shadow-lg transition-shadow bg-background/80 animate-fade-in">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <MessageSquare className="w-5 h-5 text-primary" />
+                            </div>
+                            <span className="text-lg font-medium">평균 댓글</span>
+                          </div>
+                          <span className="text-2xl font-bold text-primary">
+                            {cafe.stats.comments.toLocaleString()}
+                          </span>
+                        </Card>
+                      </div>
                     </div>
-                    <span className="text-lg font-medium">평균 댓글</span>
-                  </div>
-                  <span className="text-2xl font-bold text-primary">572</span>
-                </Card>
-              </div>
-            </div>
-          </Card>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex -left-12" />
+            <CarouselNext className="hidden md:flex -right-12" />
+          </Carousel>
+          
+          {/* Indicator dots */}
+          <div className="flex justify-center gap-2 mt-6 relative z-10">
+            {recommendedCafes.map((_, index) => (
+              <div
+                key={index}
+                className="w-2 h-2 rounded-full bg-primary/30 hover:bg-primary/50 transition-colors"
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
