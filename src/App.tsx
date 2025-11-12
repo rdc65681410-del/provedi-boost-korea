@@ -18,6 +18,7 @@ import Campaigns from "./pages/app/Campaigns";
 import CampaignDetail from "./pages/app/CampaignDetail";
 import CampaignContent from "./pages/app/CampaignContent";
 import Admin from "./pages/app/Admin";
+import Settings from "./pages/app/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,7 +46,7 @@ const App = () => (
             <Route path="campaigns/:id/content" element={<CampaignContent />} />
             <Route path="reports" element={<Reports />} />
             <Route path="admin" element={<Admin />} />
-            <Route path="settings" element={<Dashboard />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
