@@ -14,6 +14,58 @@ serve(async (req) => {
   try {
     const { orderData, cartItems } = await req.json();
     
+    // Validate input data
+    if (!orderData?.customer_name && !orderData?.customerName) {
+      return new Response(
+        JSON.stringify({ success: false, error: '고객 이름이 필요합니다' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
+    if (!orderData?.customer_email && !orderData?.customerEmail) {
+      return new Response(
+        JSON.stringify({ success: false, error: '고객 이메일이 필요합니다' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
+    if (!orderData?.customer_phone && !orderData?.customerPhone) {
+      return new Response(
+        JSON.stringify({ success: false, error: '고객 전화번호가 필요합니다' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
+    // Get customer info (support both snake_case and camelCase)
+    const customerEmail = orderData.customer_email || orderData.customerEmail;
+    const customerPhone = orderData.customer_phone || orderData.customerPhone;
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customerEmail)) {
+      return new Response(
+        JSON.stringify({ success: false, error: '올바른 이메일 형식이 아닙니다' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
+    // Validate phone format
+    const phoneRegex = /^[0-9\-+() ]+$/;
+    if (!phoneRegex.test(customerPhone) || customerPhone.length < 10 || customerPhone.length > 20) {
+      return new Response(
+        JSON.stringify({ success: false, error: '올바른 전화번호 형식이 아닙니다' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
+    // Validate cart
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+      return new Response(
+        JSON.stringify({ success: false, error: '장바구니가 비어있습니다' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;

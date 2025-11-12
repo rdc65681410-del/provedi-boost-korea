@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 import { 
   LinkIcon, 
   TrendingUp, 
@@ -80,6 +81,14 @@ const Analyze = () => {
     email: "",
     phone: "",
     company: ""
+  });
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  const checkoutSchema = z.object({
+    name: z.string().trim().min(2, "이름은 최소 2자 이상이어야 합니다").max(100, "이름은 100자 이내여야 합니다"),
+    email: z.string().trim().email("올바른 이메일 형식이 아닙니다").max(255, "이메일은 255자 이내여야 합니다"),
+    phone: z.string().regex(/^[0-9\-+()\s]+$/, "올바른 전화번호 형식이 아닙니다").min(10, "전화번호는 최소 10자 이상이어야 합니다").max(20, "전화번호는 20자 이내여야 합니다"),
+    company: z.string().trim().max(100, "회사명은 100자 이내여야 합니다").optional(),
   });
 
   const handleAnalyze = async () => {
@@ -352,9 +361,22 @@ const Analyze = () => {
   };
 
   const handleCompleteOrder = async () => {
-    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
-      toast.error("모든 필수 정보를 입력해주세요");
-      return;
+    // Validate customer info
+    try {
+      checkoutSchema.parse(customerInfo);
+      setValidationErrors({});
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0].toString()] = err.message;
+          }
+        });
+        setValidationErrors(errors);
+        toast.error("입력 정보를 확인해주세요");
+        return;
+      }
     }
 
     const totalAmount = calculateCartTotal();
@@ -1114,6 +1136,7 @@ const Analyze = () => {
                             value={customerInfo.name}
                             onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
                           />
+                          {validationErrors.name && <p className="text-sm text-red-500">{validationErrors.name}</p>}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="customer-company">회사명</Label>
@@ -1123,6 +1146,7 @@ const Analyze = () => {
                             value={customerInfo.company}
                             onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})}
                           />
+                          {validationErrors.company && <p className="text-sm text-red-500">{validationErrors.company}</p>}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="customer-email">이메일 *</Label>
@@ -1133,6 +1157,7 @@ const Analyze = () => {
                             value={customerInfo.email}
                             onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
                           />
+                          {validationErrors.email && <p className="text-sm text-red-500">{validationErrors.email}</p>}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="customer-phone">연락처 *</Label>
@@ -1143,6 +1168,7 @@ const Analyze = () => {
                             value={customerInfo.phone}
                             onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
                           />
+                          {validationErrors.phone && <p className="text-sm text-red-500">{validationErrors.phone}</p>}
                         </div>
                       </div>
                     </div>
