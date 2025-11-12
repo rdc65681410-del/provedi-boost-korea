@@ -3,7 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, TrendingUp, Users, AlertCircle, Calendar, Bell } from "lucide-react";
+import { Clock, TrendingUp, Users, AlertCircle, Calendar, Bell, Star } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Mock data for heatmap
 const generateHeatmapData = () => {
@@ -48,18 +54,28 @@ const Timing = () => {
   const [selectedDay, setSelectedDay] = useState<string>("전체");
 
   const getActivityColor = (activity: number) => {
-    if (activity >= 80) return "bg-primary/90";
-    if (activity >= 60) return "bg-primary/70";
-    if (activity >= 40) return "bg-primary/50";
-    if (activity >= 20) return "bg-primary/30";
-    return "bg-primary/10";
+    if (activity >= 80) return "bg-accent border-accent";
+    if (activity >= 60) return "bg-primary border-primary";
+    if (activity >= 40) return "bg-chart-3/60 border-chart-3";
+    if (activity >= 20) return "bg-muted border-border";
+    return "bg-muted/30 border-border";
+  };
+
+  const getActivityLabel = (activity: number) => {
+    if (activity >= 80) return "매우 높음";
+    if (activity >= 60) return "높음";
+    if (activity >= 40) return "보통";
+    if (activity >= 20) return "낮음";
+    return "매우 낮음";
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return "text-green-600 dark:text-green-400";
-    if (score >= 80) return "text-blue-600 dark:text-blue-400";
-    return "text-yellow-600 dark:text-yellow-400";
+    if (score >= 90) return "text-accent";
+    if (score >= 80) return "text-primary";
+    return "text-chart-3";
   };
+
+  const isOptimalTime = (activity: number) => activity >= 80;
 
   return (
     <div className="space-y-6 p-6">
@@ -99,8 +115,40 @@ const Timing = () => {
         <TabsContent value="heatmap" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>활동 히트맵</CardTitle>
-              <CardDescription>시간대별 카페 활동량을 한눈에 확인하세요</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>활동 히트맵</CardTitle>
+                  <CardDescription>시간대별 카페 활동량을 한눈에 확인하세요</CardDescription>
+                </div>
+                <div className="flex items-center gap-4">
+                  {/* Legend - 상단 우측 배치 */}
+                  <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border">
+                    <span className="text-xs font-medium text-muted-foreground">활동량:</span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        <div className="w-5 h-5 rounded border bg-muted/30 border-border" />
+                        <span className="text-xs text-muted-foreground">매우 낮음</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-5 h-5 rounded border bg-muted border-border" />
+                        <span className="text-xs text-muted-foreground">낮음</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-5 h-5 rounded border bg-chart-3/60 border-chart-3" />
+                        <span className="text-xs text-muted-foreground">보통</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-5 h-5 rounded border bg-primary border-primary" />
+                        <span className="text-xs text-muted-foreground">높음</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-5 h-5 rounded border bg-accent border-accent" />
+                        <span className="text-xs text-muted-foreground">매우 높음</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -126,54 +174,90 @@ const Timing = () => {
                 </div>
 
                 {/* Heatmap */}
-                <div className="overflow-x-auto">
-                  <div className="min-w-[1200px] space-y-2">
-                    {/* Hour labels */}
-                    <div className="grid grid-cols-[60px_1fr] gap-2">
-                      <div />
-                      <div className="grid gap-1" style={{ gridTemplateColumns: "repeat(24, minmax(32px, 1fr))" }}>
-                        {Array.from({ length: 24 }, (_, i) => (
-                          <div key={i} className="text-xs text-center text-muted-foreground">
-                            {i}
+                <TooltipProvider>
+                  <div className="overflow-x-auto pb-4">
+                    <div className="min-w-[1200px] space-y-3">
+                      {/* Hour labels */}
+                      <div className="grid grid-cols-[80px_1fr] gap-3">
+                        <div className="text-sm font-semibold text-muted-foreground">요일 / 시간</div>
+                        <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(24, minmax(40px, 1fr))" }}>
+                          {Array.from({ length: 24 }, (_, i) => (
+                            <div key={i} className="text-xs font-medium text-center text-foreground">
+                              {i}시
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Heatmap rows */}
+                      {heatmapData
+                        .filter(d => selectedDay === "전체" || d.day === selectedDay)
+                        .map(({ day, hours }, dayIdx) => (
+                          <div 
+                            key={day} 
+                            className="grid grid-cols-[80px_1fr] gap-3 animate-fade-in"
+                            style={{ animationDelay: `${dayIdx * 0.05}s` }}
+                          >
+                            <div className="text-sm font-bold flex items-center text-foreground">
+                              {day}요일
+                            </div>
+                            <div className="grid gap-2" style={{ gridTemplateColumns: "repeat(24, minmax(40px, 1fr))" }}>
+                              {hours.map(({ hour, activity }) => (
+                                <Tooltip key={`${day}-${hour}`}>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className={`relative aspect-square rounded-md border-2 cursor-pointer transition-all hover:scale-110 hover:z-10 hover:shadow-lg ${getActivityColor(activity)} group`}
+                                    >
+                                      {/* 최적 시간대 표시 */}
+                                      {isOptimalTime(activity) && (
+                                        <div className="absolute -top-1 -right-1">
+                                          <Star className="h-3 w-3 text-accent fill-accent drop-shadow" />
+                                        </div>
+                                      )}
+                                      {/* 호버 시 활동량 표시 */}
+                                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="text-[10px] font-bold text-foreground drop-shadow">
+                                          {activity}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="bg-card border-border">
+                                    <div className="text-center space-y-1">
+                                      <p className="font-bold text-foreground">{day}요일 {hour}시</p>
+                                      <p className="text-lg font-bold text-primary">{activity}%</p>
+                                      <p className="text-xs text-muted-foreground">활동량: {getActivityLabel(activity)}</p>
+                                      {isOptimalTime(activity) && (
+                                        <Badge className="mt-1 bg-accent text-accent-foreground">
+                                          <Star className="h-3 w-3 mr-1" />
+                                          최적 시간
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ))}
+                            </div>
                           </div>
                         ))}
-                      </div>
-                    </div>
 
-                    {/* Heatmap rows */}
-                    {heatmapData
-                      .filter(d => selectedDay === "전체" || d.day === selectedDay)
-                      .map(({ day, hours }) => (
-                        <div key={day} className="grid grid-cols-[60px_1fr] gap-2">
-                          <div className="text-sm font-medium flex items-center">
-                            {day}
-                          </div>
-                          <div className="grid gap-1" style={{ gridTemplateColumns: "repeat(24, minmax(32px, 1fr))" }}>
-                            {hours.map(({ hour, activity }) => (
-                              <div
-                                key={`${day}-${hour}`}
-                                className={`aspect-square rounded ${getActivityColor(activity)} hover:ring-2 ring-primary cursor-pointer transition-all`}
-                                title={`${day} ${hour}시: ${activity}% 활동량`}
-                              />
-                            ))}
+                      {/* 하단 설명 */}
+                      <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                        <div className="flex items-start gap-3">
+                          <Star className="h-5 w-5 text-accent mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-foreground mb-1">히트맵 활용 팁</h4>
+                            <ul className="text-sm text-muted-foreground space-y-1">
+                              <li>• 각 셀에 마우스를 올려 정확한 활동량을 확인할 수 있습니다</li>
+                              <li>• <Star className="h-3 w-3 inline text-accent fill-accent" /> 별표가 있는 시간대는 80% 이상의 높은 활동량을 보이는 최적 시간입니다</li>
+                              <li>• 진한 색상일수록 활동량이 높습니다</li>
+                            </ul>
                           </div>
                         </div>
-                      ))}
-
-                    {/* Legend */}
-                    <div className="flex items-center gap-2 mt-6 justify-end">
-                      <span className="text-xs text-muted-foreground">낮음</span>
-                      <div className="flex gap-1">
-                        <div className="w-4 h-4 rounded bg-primary/10" />
-                        <div className="w-4 h-4 rounded bg-primary/30" />
-                        <div className="w-4 h-4 rounded bg-primary/50" />
-                        <div className="w-4 h-4 rounded bg-primary/70" />
-                        <div className="w-4 h-4 rounded bg-primary/90" />
                       </div>
-                      <span className="text-xs text-muted-foreground">높음</span>
                     </div>
                   </div>
-                </div>
+                </TooltipProvider>
               </div>
             </CardContent>
           </Card>
@@ -225,16 +309,16 @@ const Timing = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-orange-500" />
+                  <AlertCircle className="h-5 w-5 text-destructive" />
                   피해야 할 시간
                 </CardTitle>
                 <CardDescription>활동량이 낮은 시간대입니다</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {avoidTimes.map((slot, idx) => (
-                  <div key={idx} className="p-4 border border-orange-200 dark:border-orange-900 rounded-lg bg-orange-50 dark:bg-orange-950/20">
-                    <div className="font-semibold text-orange-900 dark:text-orange-200">{slot.time}</div>
-                    <div className="text-sm text-orange-700 dark:text-orange-300 mt-1">{slot.reason}</div>
+                  <div key={idx} className="p-4 border border-destructive/20 rounded-lg bg-destructive/5">
+                    <div className="font-semibold text-foreground">{slot.time}</div>
+                    <div className="text-sm text-muted-foreground mt-1">{slot.reason}</div>
                   </div>
                 ))}
 
@@ -299,9 +383,9 @@ const Timing = () => {
                 ))}
               </div>
 
-              <div className="mt-6 p-4 border border-blue-200 dark:border-blue-900 rounded-lg bg-blue-50 dark:bg-blue-950/20">
-                <h4 className="font-semibold text-blue-900 dark:text-blue-200 mb-2">💡 인사이트</h4>
-                <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+              <div className="mt-6 p-4 border border-primary/20 rounded-lg bg-primary/5">
+                <h4 className="font-semibold text-foreground mb-2">💡 인사이트</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• 수요일이 가장 활발한 요일입니다 (88% 활동량)</li>
                   <li>• 주말(토,일)은 상대적으로 활동량이 낮습니다</li>
                   <li>• 평일 오전 10시와 오후 2시가 전반적으로 피크 시간입니다</li>
