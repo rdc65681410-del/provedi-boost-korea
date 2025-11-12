@@ -18,7 +18,9 @@ import {
   Link2,
   Shield,
   Save,
-  Camera
+  Camera,
+  BarChart3,
+  TrendingUp
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -487,19 +489,50 @@ const Settings = () => {
         <TabsContent value="integrations" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>쇼핑몰 연동</CardTitle>
+              <CardTitle>맘카페 계정 연동</CardTitle>
               <CardDescription>
-                상품 정보 자동 수집을 위한 쇼핑몰 연동
+                네이버 맘카페 계정을 연동하여 자동 게시 기능을 활성화하세요
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <User className="h-5 w-5 text-emerald-500" />
+                  </div>
+                  <div>
+                    <p className="font-medium">네이버 계정</p>
+                    <p className="text-sm text-muted-foreground">연동 안됨</p>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm">
+                  <Link2 className="h-4 w-4 mr-2" />
+                  연동하기
+                </Button>
+              </div>
+              <div className="p-4 rounded-lg bg-muted">
+                <p className="text-sm text-muted-foreground">
+                  💡 <strong>자동 게시 기능:</strong> 네이버 계정을 연동하면 생성된 콘텐츠를 자동으로 맘카페에 게시할 수 있습니다.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>분석 도구 연동</CardTitle>
+              <CardDescription>
+                트래픽 분석 및 전환 추적을 위한 도구 연동
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                    <Link2 className="h-5 w-5 text-blue-500" />
+                    <BarChart3 className="h-5 w-5 text-blue-500" />
                   </div>
                   <div>
-                    <p className="font-medium">쿠팡</p>
+                    <p className="font-medium">Google Analytics</p>
                     <p className="text-sm text-muted-foreground">연동 안됨</p>
                   </div>
                 </div>
@@ -511,10 +544,10 @@ const Settings = () => {
               <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                    <Link2 className="h-5 w-5 text-emerald-500" />
+                    <TrendingUp className="h-5 w-5 text-emerald-500" />
                   </div>
                   <div>
-                    <p className="font-medium">네이버 스마트스토어</p>
+                    <p className="font-medium">네이버 애널리틱스</p>
                     <p className="text-sm text-muted-foreground">연동 안됨</p>
                   </div>
                 </div>
@@ -522,20 +555,42 @@ const Settings = () => {
                   연동하기
                 </Button>
               </div>
+            </CardContent>
+          </Card>
 
+          <Card>
+            <CardHeader>
+              <CardTitle>워크플로우 자동화</CardTitle>
+              <CardDescription>
+                Zapier를 통한 맞춤 자동화 워크플로우
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
                     <Link2 className="h-5 w-5 text-purple-500" />
                   </div>
                   <div>
-                    <p className="font-medium">11번가</p>
-                    <p className="text-sm text-muted-foreground">연동 안됨</p>
+                    <p className="font-medium">Zapier</p>
+                    <p className="text-sm text-muted-foreground">다양한 앱과 연동 가능</p>
                   </div>
                 </div>
                 <Button variant="outline" size="sm">
-                  연동하기
+                  설정하기
                 </Button>
+              </div>
+              <div className="p-4 rounded-lg bg-muted">
+                <p className="text-sm text-muted-foreground mb-3">
+                  <strong>Zapier Webhook URL</strong>
+                </p>
+                <Input
+                  placeholder="https://hooks.zapier.com/hooks/catch/..."
+                  className="mb-2"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Zapier에서 Webhook 트리거를 생성하고 URL을 입력하세요
+                </p>
               </div>
             </CardContent>
           </Card>
