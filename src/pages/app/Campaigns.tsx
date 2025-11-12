@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -341,13 +342,17 @@ const Campaigns = () => {
 
         {/* 액션 버튼 */}
         <div className="flex gap-2 mt-4">
-          <Button variant="outline" className="flex-1" size="sm">
-            상세보기
-          </Button>
-          {campaign.status === "active" && (
-            <Button className="flex-1" size="sm">
-              콘텐츠 관리
+          <Link to={`/app/campaigns/${campaign.id}`} className="flex-1">
+            <Button variant="outline" className="w-full" size="sm">
+              상세보기
             </Button>
+          </Link>
+          {campaign.status === "active" && (
+            <Link to={`/app/campaigns/${campaign.id}/content`} className="flex-1">
+              <Button className="w-full" size="sm">
+                콘텐츠 관리
+              </Button>
+            </Link>
           )}
         </div>
       </CardContent>
