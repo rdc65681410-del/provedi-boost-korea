@@ -47,20 +47,20 @@ const Reports = () => {
     totalPosts: 148,
     totalViews: 324580,
     totalEngagement: 18924,
-    totalRevenue: 8450000,
+    totalReactions: 12580,
     avgROI: 342,
     engagementRate: 5.8,
   };
 
   // 주간 트렌드 데이터
   const weeklyTrend = [
-    { date: "11/24", views: 12500, engagement: 720, revenue: 420000 },
-    { date: "11/25", views: 15200, engagement: 890, revenue: 580000 },
-    { date: "11/26", views: 18300, engagement: 1050, revenue: 720000 },
-    { date: "11/27", views: 16800, engagement: 960, revenue: 650000 },
-    { date: "11/28", views: 21400, engagement: 1240, revenue: 890000 },
-    { date: "11/29", views: 19600, engagement: 1120, revenue: 760000 },
-    { date: "11/30", views: 23100, engagement: 1340, revenue: 950000 },
+    { date: "11/24", views: 12500, engagement: 720, reactions: 520 },
+    { date: "11/25", views: 15200, engagement: 890, reactions: 680 },
+    { date: "11/26", views: 18300, engagement: 1050, reactions: 820 },
+    { date: "11/27", views: 16800, engagement: 960, reactions: 740 },
+    { date: "11/28", views: 21400, engagement: 1240, reactions: 950 },
+    { date: "11/29", views: 19600, engagement: 1120, reactions: 860 },
+    { date: "11/30", views: 23100, engagement: 1340, reactions: 1020 },
   ];
 
   // 채널별 성과
@@ -70,7 +70,8 @@ const Reports = () => {
       posts: 24,
       views: 89200,
       engagement: 5240,
-      revenue: 2850000,
+      comments: 3420,
+      likes: 4850,
       roi: 390,
       rating: "A+",
       trend: "up"
@@ -80,7 +81,8 @@ const Reports = () => {
       posts: 18,
       views: 67400,
       engagement: 3890,
-      revenue: 2140000,
+      comments: 2560,
+      likes: 3640,
       roi: 368,
       rating: "A",
       trend: "up"
@@ -90,7 +92,8 @@ const Reports = () => {
       posts: 15,
       views: 52300,
       engagement: 2980,
-      revenue: 1680000,
+      comments: 1980,
+      likes: 2820,
       roi: 325,
       rating: "A",
       trend: "stable"
@@ -100,7 +103,8 @@ const Reports = () => {
       posts: 12,
       views: 41200,
       engagement: 2340,
-      revenue: 1280000,
+      comments: 1520,
+      likes: 2180,
       roi: 298,
       rating: "B+",
       trend: "down"
@@ -110,7 +114,8 @@ const Reports = () => {
       posts: 9,
       views: 28600,
       engagement: 1580,
-      revenue: 920000,
+      comments: 980,
+      likes: 1420,
       roi: 285,
       rating: "B+",
       trend: "stable"
@@ -148,7 +153,8 @@ const Reports = () => {
       posts: 15,
       views: 42300,
       engagement: 2480,
-      revenue: 1850000,
+      comments: 1650,
+      likes: 2280,
       startDate: "2025-10-20",
     },
     {
@@ -159,7 +165,8 @@ const Reports = () => {
       posts: 28,
       views: 78600,
       engagement: 4520,
-      revenue: 3240000,
+      comments: 3120,
+      likes: 4340,
       startDate: "2025-10-15",
     },
     {
@@ -170,7 +177,8 @@ const Reports = () => {
       posts: 22,
       views: 61200,
       engagement: 3680,
-      revenue: 2580000,
+      comments: 2450,
+      likes: 3520,
       startDate: "2025-10-01",
     },
   ];
@@ -268,17 +276,17 @@ const Reports = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-2">
-              <div className="p-2 rounded-lg bg-emerald-500/10">
-                <DollarSign className="h-5 w-5 text-emerald-500" />
+              <div className="p-2 rounded-lg bg-chart-3/10">
+                <MessageCircle className="h-5 w-5 text-chart-3" />
               </div>
               <div className="flex items-center text-emerald-500 text-sm">
                 <ArrowUpRight className="h-4 w-4" />
-                <span className="font-semibold">24.7%</span>
+                <span className="font-semibold">18.2%</span>
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">총 매출</p>
-              <p className="text-2xl font-bold">{formatNumber(overallStats.totalRevenue)}원</p>
+              <p className="text-sm text-muted-foreground">총 반응수</p>
+              <p className="text-2xl font-bold">{formatNumber(overallStats.totalReactions)}</p>
             </div>
           </CardContent>
         </Card>
@@ -291,14 +299,14 @@ const Reports = () => {
             <BarChart3 className="h-5 w-5 mr-2" />
             주간 성과 트렌드
           </CardTitle>
-          <CardDescription>최근 7일간의 조회수, 참여, 매출 추이</CardDescription>
+          <CardDescription>최근 7일간의 조회수, 참여, 반응 추이</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="views" className="space-y-4">
             <TabsList>
               <TabsTrigger value="views">조회수</TabsTrigger>
               <TabsTrigger value="engagement">참여</TabsTrigger>
-              <TabsTrigger value="revenue">매출</TabsTrigger>
+              <TabsTrigger value="reactions">반응</TabsTrigger>
             </TabsList>
 
             <TabsContent value="views">
@@ -331,14 +339,14 @@ const Reports = () => {
               </ResponsiveContainer>
             </TabsContent>
 
-            <TabsContent value="revenue">
+            <TabsContent value="reactions">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={weeklyTrend}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="revenue" fill="hsl(var(--chart-3))" />
+                  <Bar dataKey="reactions" fill="hsl(var(--chart-3))" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </TabsContent>
@@ -378,7 +386,7 @@ const Reports = () => {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div className="grid grid-cols-4 gap-3 text-sm">
                     <div>
                       <p className="text-xs text-muted-foreground mb-1">조회수</p>
                       <p className="font-semibold">{formatNumber(channel.views)}</p>
@@ -388,8 +396,18 @@ const Reports = () => {
                       <p className="font-semibold">{formatNumber(channel.engagement)}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground mb-1">매출</p>
-                      <p className="font-semibold text-emerald-600">{formatNumber(channel.revenue)}원</p>
+                      <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                        <MessageCircle className="w-3 h-3" />
+                        댓글
+                      </p>
+                      <p className="font-semibold text-accent">{formatNumber(channel.comments)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                        <ThumbsUp className="w-3 h-3" />
+                        좋아요
+                      </p>
+                      <p className="font-semibold text-primary">{formatNumber(channel.likes)}</p>
                     </div>
                   </div>
                 </div>
@@ -498,7 +516,7 @@ const Reports = () => {
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">채널</p>
                     <p className="font-semibold">{campaign.channels}개</p>
@@ -516,8 +534,18 @@ const Reports = () => {
                     <p className="font-semibold">{formatNumber(campaign.engagement)}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">매출</p>
-                    <p className="font-semibold text-emerald-600">{formatNumber(campaign.revenue)}원</p>
+                    <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                      <MessageCircle className="w-3 h-3" />
+                      댓글
+                    </p>
+                    <p className="font-semibold text-accent">{formatNumber(campaign.comments)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                      <ThumbsUp className="w-3 h-3" />
+                      좋아요
+                    </p>
+                    <p className="font-semibold text-primary">{formatNumber(campaign.likes)}</p>
                   </div>
                 </div>
               </div>
