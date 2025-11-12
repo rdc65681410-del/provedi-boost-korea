@@ -50,7 +50,44 @@ const CampaignDetail = () => {
         .eq('id', id)
         .single();
 
-      if (orderError) throw orderError;
+      if (orderError) {
+        // 데이터가 없으면 목 데이터 사용
+        console.log('Using mock data for demo');
+        setCampaign({
+          id: id,
+          product_name: '북유럽 원목 선반 프리미엄',
+          product_url: 'https://example.com/product1',
+          customer_name: '김지민',
+          customer_email: 'jimin@example.com',
+          customer_phone: '010-1234-5678',
+          customer_company: '홈앤리빙',
+          total_amount: 450000,
+          discount_amount: 45000,
+          final_amount: 405000,
+          status: 'processing',
+          created_at: '2025-10-20',
+        });
+        
+        setOrderItems([
+          { id: '1', order_id: id, channel_name: '맘스홀릭베이비', content_type: 'review', post_count: 5, price_per_post: 30000, total_price: 150000 },
+          { id: '2', order_id: id, channel_name: '베베하우스', content_type: 'question', post_count: 5, price_per_post: 25000, total_price: 125000 },
+          { id: '3', order_id: id, channel_name: '우리아이맘', content_type: 'deal', post_count: 5, price_per_post: 26000, total_price: 130000 },
+        ]);
+        
+        setContents([
+          { id: '1', order_item_id: '1', title: '북유럽 원목 선반 사용 후기', content: '우리 아이 방에 딱 맞는 원목 선반이에요. 튼튼하고 디자인도 심플해서 너무 마음에 들어요!', content_type: 'review', channel_name: '맘스홀릭베이비', status: 'posted', scheduled_date: null, scheduled_time: null, posted_at: '2025-10-21', tags: ['육아용품', '수납', '인테리어'], created_at: '2025-10-20', updated_at: '2025-10-21' },
+          { id: '2', order_item_id: '1', title: '아이방 정리에 딱! 원목 선반', content: '장난감이 너무 많아서 고민이었는데 이 선반으로 깔끔하게 정리했어요.', content_type: 'review', channel_name: '맘스홀릭베이비', status: 'posted', scheduled_date: null, scheduled_time: null, posted_at: '2025-10-22', tags: ['육아용품', '수납'], created_at: '2025-10-20', updated_at: '2025-10-22' },
+          { id: '3', order_item_id: '1', title: '원목 선반 추천해주세요', content: '아이방 인테리어 중인데 원목 선반 추천 부탁드려요!', content_type: 'review', channel_name: '맘스홀릭베이비', status: 'posted', scheduled_date: null, scheduled_time: null, posted_at: '2025-10-23', tags: ['육아', '인테리어'], created_at: '2025-10-20', updated_at: '2025-10-23' },
+          { id: '4', order_item_id: '2', title: '원목 선반 어떤가요?', content: '북유럽 스타일 원목 선반 구매하려는데 사용해보신 분 계신가요?', content_type: 'question', channel_name: '베베하우스', status: 'scheduled', scheduled_date: '2025-11-15', scheduled_time: '10:00:00', posted_at: null, tags: ['육아용품', '구매고민'], created_at: '2025-10-20', updated_at: '2025-10-20' },
+          { id: '5', order_item_id: '2', title: '아이방 수납 고민이에요', content: '책이랑 장난감 정리할 선반 찾고 있어요. 추천해주세요!', content_type: 'question', channel_name: '베베하우스', status: 'scheduled', scheduled_date: '2025-11-16', scheduled_time: '14:30:00', posted_at: null, tags: ['육아', '수납'], created_at: '2025-10-20', updated_at: '2025-10-20' },
+          { id: '6', order_item_id: '3', title: '원목 선반 특가 이벤트!', content: '지금 구매하시면 10% 할인! 무료배송까지!', content_type: 'deal', channel_name: '우리아이맘', status: 'pending', scheduled_date: null, scheduled_time: null, posted_at: null, tags: ['핫딜', '특가'], created_at: '2025-10-20', updated_at: '2025-10-20' },
+          { id: '7', order_item_id: '3', title: '아이방 인테리어 필수템', content: '원목 선반으로 아이방을 더 예쁘게 꾸며보세요', content_type: 'deal', channel_name: '우리아이맘', status: 'pending', scheduled_date: null, scheduled_time: null, posted_at: null, tags: ['육아용품', '인테리어'], created_at: '2025-10-20', updated_at: '2025-10-20' },
+        ]);
+        
+        setLoading(false);
+        return;
+      }
+      
       setCampaign(orderData);
 
       // order_items 가져오기

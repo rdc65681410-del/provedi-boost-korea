@@ -342,18 +342,16 @@ const Campaigns = () => {
 
         {/* 액션 버튼 */}
         <div className="flex gap-2 mt-4">
-          <Link to={`/app/campaigns/${campaign.id}`} className="flex-1">
+          <Link to={`/app/campaigns/demo-${campaign.id}`} className="flex-1">
             <Button variant="outline" className="w-full" size="sm">
               상세보기
             </Button>
           </Link>
-          {campaign.status === "active" && (
-            <Link to={`/app/campaigns/${campaign.id}/content`} className="flex-1">
-              <Button className="w-full" size="sm">
-                콘텐츠 관리
-              </Button>
-            </Link>
-          )}
+          <Link to={`/app/campaigns/demo-${campaign.id}/content`} className="flex-1">
+            <Button className="w-full" size="sm">
+              콘텐츠 관리
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
