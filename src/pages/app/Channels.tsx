@@ -62,7 +62,7 @@ const Channels = () => {
   const [showAllCafes, setShowAllCafes] = useState(false);
 
   // 전체 카페 데이터베이스에서 가져오기
-  const loadAllCafes = async () => {
+  const loadAllCafes = async (): Promise<CafeData[]> => {
     try {
       const { data, error } = await supabase
         .from('mom_cafe_channels')
@@ -96,11 +96,13 @@ const Channels = () => {
           isRising: cafe.avg_engagement_rate > 5.0
         }));
 
-        setRecommendedCafes(formattedCafes);
+        return formattedCafes;
       }
+      return [];
     } catch (error) {
       console.error("카페 데이터 로드 오류:", error);
       toast.error("카페 데이터를 불러오는데 실패했습니다");
+      return [];
     }
   };
 
@@ -126,10 +128,10 @@ const Channels = () => {
 
     try {
       // 데이터베이스에서 실제 카페 데이터 가져오기
-      await loadAllCafes();
+      const allCafes = await loadAllCafes();
 
       // 키워드와 매칭되는 카페 점수 계산
-      const scoredCafes = recommendedCafes.map(cafe => {
+      const scoredCafes = allCafes.map(cafe => {
         const keywordMatchCount = selectedKeywords.filter(keyword => 
           cafe.keywords.some(ck => ck.toLowerCase().includes(keyword.toLowerCase()))
         ).length;
@@ -248,8 +250,9 @@ const Channels = () => {
         <Card>
           <CardContent className="pt-6">
             <Button 
-              onClick={() => {
-                loadAllCafes();
+              onClick={async () => {
+                const cafes = await loadAllCafes();
+                setRecommendedCafes(cafes);
                 setShowAllCafes(true);
               }}
               variant="outline"
