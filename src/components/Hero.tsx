@@ -1,19 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Sparkles, Link2, TrendingUp } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import heroImage from "@/assets/hero-bg.jpg";
 
 const Hero = () => {
   const [url, setUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const navigate = useNavigate();
 
   const handleAnalyze = () => {
     if (!url) return;
     setIsAnalyzing(true);
     setTimeout(() => {
-      window.location.href = "/app/analyze";
+      navigate("/app/analyze");
     }, 1500);
   };
 

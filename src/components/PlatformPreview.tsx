@@ -262,17 +262,17 @@ const PlatformPreview = () => {
                     실시간으로 성과를 모니터링하세요.
                   </p>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-500/10">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-accent/10">
                       <span className="text-sm font-semibold">진행중인 캠페인</span>
-                      <span className="text-2xl font-bold text-emerald-600">5개</span>
+                      <span className="text-2xl font-bold text-accent">5개</span>
                     </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-blue-500/10">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10">
                       <span className="text-sm font-semibold">예약된 포스팅</span>
-                      <span className="text-2xl font-bold text-blue-600">24개</span>
+                      <span className="text-2xl font-bold text-primary">24개</span>
                     </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-amber-500/10">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-chart-3/10">
                       <span className="text-sm font-semibold">이번 달 조회수</span>
-                      <span className="text-2xl font-bold text-amber-600">32만</span>
+                      <span className="text-2xl font-bold text-chart-3">32만</span>
                     </div>
                   </div>
                 </div>
@@ -290,7 +290,7 @@ const PlatformPreview = () => {
 
           {/* 성과 리포트 탭 */}
           <TabsContent value="reports" className="space-y-6 animate-fade-in">
-            <Card className="p-6 bg-card border-2 border-emerald-500">
+            <Card className="p-6 bg-card border-2 border-accent">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="relative rounded-lg overflow-hidden border border-border">
                   <img 
@@ -300,7 +300,7 @@ const PlatformPreview = () => {
                   />
                 </div>
                 <div className="space-y-4">
-                  <Badge className="bg-emerald-500 text-white">
+                  <Badge className="bg-accent text-accent-foreground">
                     실시간 분석
                   </Badge>
                   <h3 className="text-2xl font-bold text-foreground">
@@ -317,7 +317,7 @@ const PlatformPreview = () => {
                         <span className="text-xs text-muted-foreground">조회수</span>
                       </div>
                       <p className="text-2xl font-bold">32.4만</p>
-                      <p className="text-xs text-emerald-600 font-semibold">+12.5%</p>
+                      <p className="text-xs text-accent font-semibold">+12.5%</p>
                     </div>
                     <div className="p-4 rounded-lg bg-muted">
                       <div className="flex items-center gap-2 mb-2">
@@ -325,7 +325,7 @@ const PlatformPreview = () => {
                         <span className="text-xs text-muted-foreground">참여율</span>
                       </div>
                       <p className="text-2xl font-bold">5.8%</p>
-                      <p className="text-xs text-emerald-600 font-semibold">+8.3%</p>
+                      <p className="text-xs text-accent font-semibold">+8.3%</p>
                     </div>
                     <div className="p-4 rounded-lg bg-muted">
                       <div className="flex items-center gap-2 mb-2">
@@ -333,7 +333,7 @@ const PlatformPreview = () => {
                         <span className="text-xs text-muted-foreground">도달 수</span>
                       </div>
                       <p className="text-2xl font-bold">8.2만</p>
-                      <p className="text-xs text-emerald-600 font-semibold">+15.7%</p>
+                      <p className="text-xs text-accent font-semibold">+15.7%</p>
                     </div>
                     <div className="p-4 rounded-lg bg-muted">
                       <div className="flex items-center gap-2 mb-2">
@@ -341,7 +341,7 @@ const PlatformPreview = () => {
                         <span className="text-xs text-muted-foreground">ROI</span>
                       </div>
                       <p className="text-2xl font-bold">342%</p>
-                      <p className="text-xs text-emerald-600 font-semibold">+24.7%</p>
+                      <p className="text-xs text-accent font-semibold">+24.7%</p>
                     </div>
                   </div>
                 </div>

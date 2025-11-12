@@ -207,7 +207,7 @@ export const AIProductNaming = () => {
                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         {copiedIndex === idx ? (
-                          <Check className="h-4 w-4 text-emerald-500" />
+                          <Check className="h-4 w-4 text-accent" />
                         ) : (
                           <Copy className="h-4 w-4" />
                         )}

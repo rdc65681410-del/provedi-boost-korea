@@ -75,7 +75,7 @@ const BeforeAfter = () => {
     <section className="py-24 bg-gradient-to-b from-background to-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-gradient-to-r from-red-500 to-emerald-500 text-white px-6 py-2 text-base">
+          <Badge className="mb-4 bg-gradient-to-r from-destructive to-accent text-white px-6 py-2 text-base">
             비교해보세요
           </Badge>
           <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
@@ -143,7 +143,7 @@ const BeforeAfter = () => {
             {/* After - Automated */}
             <div className="space-y-6">
               <div className="text-center lg:text-left">
-                <Badge className="mb-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-base px-4 py-2">
+                <Badge className="mb-3 bg-gradient-to-r from-accent to-accent-foreground text-white text-base px-4 py-2">
                   <Sparkles className="h-4 w-4 mr-2" />
                   우리 플랫폼
                 </Badge>
@@ -160,11 +160,11 @@ const BeforeAfter = () => {
                 return (
                   <Card 
                     key={index} 
-                    className="border-2 border-emerald-500/20 bg-emerald-500/5 hover:shadow-lg transition-all hover:-translate-y-1"
+                    className="border-2 border-accent/20 bg-accent/5 hover:shadow-lg transition-all hover:-translate-y-1"
                   >
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center">
                           <Icon className="h-5 w-5" />
                         </div>
                         <h4 className="font-bold text-foreground">{section.title}</h4>
@@ -172,7 +172,7 @@ const BeforeAfter = () => {
                       <ul className="space-y-2">
                         {section.items.map((item, itemIndex) => (
                           <li key={itemIndex} className="flex items-start gap-2 text-sm">
-                            <Check className="h-4 w-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                            <Check className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
                             <span className="text-foreground font-medium">{item}</span>
                           </li>
                         ))}
@@ -182,8 +182,8 @@ const BeforeAfter = () => {
                 );
               })}
 
-              <div className="text-center p-6 bg-gradient-to-r from-emerald-500/10 to-green-500/10 rounded-lg border-2 border-emerald-500/20">
-                <p className="text-lg font-bold text-emerald-600 mb-1">
+              <div className="text-center p-6 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border-2 border-accent/20">
+                <p className="text-lg font-bold text-accent mb-1">
                   총 소요 시간: 30분
                 </p>
                 <p className="text-sm text-muted-foreground">
@@ -205,15 +205,15 @@ const BeforeAfter = () => {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 text-sm">
                   <div className="flex items-center gap-2 bg-background/80 px-4 py-2 rounded-full">
-                    <Check className="h-4 w-4 text-emerald-500" />
+                    <Check className="h-4 w-4 text-accent" />
                     <span className="font-semibold">10시간 → 30분</span>
                   </div>
                   <div className="flex items-center gap-2 bg-background/80 px-4 py-2 rounded-full">
-                    <Check className="h-4 w-4 text-emerald-500" />
+                    <Check className="h-4 w-4 text-accent" />
                     <span className="font-semibold">200만원 → 50만원</span>
                   </div>
                   <div className="flex items-center gap-2 bg-background/80 px-4 py-2 rounded-full">
-                    <Check className="h-4 w-4 text-emerald-500" />
+                    <Check className="h-4 w-4 text-accent" />
                     <span className="font-semibold">ROI 3배 향상</span>
                   </div>
                 </div>

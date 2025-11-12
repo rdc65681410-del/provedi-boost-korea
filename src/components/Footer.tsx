@@ -24,18 +24,18 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">회사</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">소개</a></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">소개</Link></li>
               <li><a href="#contact" className="hover:text-primary transition-colors">문의</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">블로그</a></li>
+              <li><Link to="/blog" className="hover:text-primary transition-colors">블로그</Link></li>
             </ul>
           </div>
           
           <div>
             <h4 className="font-semibold mb-4">지원</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">도움말</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">이용약관</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">개인정보처리방침</a></li>
+              <li><Link to="/help" className="hover:text-primary transition-colors">도움말</Link></li>
+              <li><Link to="/terms" className="hover:text-primary transition-colors">이용약관</Link></li>
+              <li><Link to="/privacy" className="hover:text-primary transition-colors">개인정보처리방침</Link></li>
             </ul>
           </div>
         </div>
