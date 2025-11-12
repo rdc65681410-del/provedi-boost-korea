@@ -68,7 +68,12 @@ ${keywordData.map((kw: any) => `- ${kw.keyword}: 노출 ${kw.exposures}회, 평�
     }
 
     const aiData = await aiResponse.json();
-    const insights = JSON.parse(aiData.choices[0].message.content);
+    let content = aiData.choices[0].message.content;
+    
+    // Remove markdown code blocks if present
+    content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    const insights = JSON.parse(content);
 
     return new Response(JSON.stringify(insights), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
