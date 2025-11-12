@@ -15,6 +15,8 @@ import Timing from "./pages/app/Timing";
 import Packages from "./pages/app/Packages";
 import Reports from "./pages/app/Reports";
 import Campaigns from "./pages/app/Campaigns";
+import CampaignDetail from "./pages/app/CampaignDetail";
+import CampaignContent from "./pages/app/CampaignContent";
 import Admin from "./pages/app/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +41,8 @@ const App = () => (
             <Route path="timing" element={<Timing />} />
             <Route path="packages" element={<Packages />} />
             <Route path="campaigns" element={<Campaigns />} />
+            <Route path="campaigns/:id" element={<CampaignDetail />} />
+            <Route path="campaigns/:id/content" element={<CampaignContent />} />
             <Route path="reports" element={<Reports />} />
             <Route path="admin" element={<Admin />} />
             <Route path="settings" element={<Dashboard />} />

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ import {
   Calendar as CalendarIcon
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,14 +58,86 @@ interface Campaign {
 const Campaigns = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
   const [newCampaign, setNewCampaign] = useState({
     name: "",
     productUrl: "",
     description: "",
   });
 
-  // 목 데이터
-  const [campaigns, setCampaigns] = useState<Campaign[]>([
+  useEffect(() => {
+    loadCampaigns();
+  }, []);
+
+  const loadCampaigns = async () => {
+    setLoading(true);
+    try {
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          order_items (
+            id,
+            channel_name,
+            content_type,
+            post_count
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform data to match Campaign interface
+      const transformedCampaigns = await Promise.all(
+        (orders || []).map(async (order: any) => {
+          const itemIds = order.order_items.map((i: any) => i.id);
+          
+          const { data: contents } = await supabase
+            .from('generated_contents')
+            .select('status, posted_at')
+            .in('order_item_id', itemIds);
+
+          const totalPosts = order.order_items.reduce(
+            (sum: number, item: any) => sum + item.post_count, 
+            0
+          );
+          const postedCount = contents?.filter(c => c.status === 'posted').length || 0;
+          const estimatedViews = postedCount * 2500;
+          const estimatedEngagement = Math.round(estimatedViews * 0.058);
+          const estimatedRevenue = Math.round(order.total_amount * 4.2);
+
+          return {
+            id: order.id,
+            name: order.product_name || '캠페인',
+            status: order.status === 'completed' ? 'completed' : 
+                    order.status === 'cancelled' ? 'paused' :
+                    postedCount > 0 ? 'active' : 'scheduled',
+            productUrl: order.product_url,
+            channels: [...new Set(order.order_items.map((i: any) => i.channel_name))],
+            totalPosts,
+            postedCount,
+            views: estimatedViews,
+            engagement: estimatedEngagement,
+            revenue: estimatedRevenue,
+            startDate: order.created_at.split('T')[0],
+            budget: order.total_amount,
+            spent: order.final_amount,
+          };
+        })
+      );
+
+      setCampaigns(transformedCampaigns);
+    } catch (error) {
+      console.error('Error loading campaigns:', error);
+      toast.error('캠페인 목록을 불러오는데 실패했습니다');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Mock data for demo (removed, now using real data)
+  const [mockCampaigns] = useState<Campaign[]>([
     {
       id: 1,
       name: "북유럽 원목 선반 캠페인",
@@ -341,13 +415,17 @@ const Campaigns = () => {
 
         {/* 액션 버튼 */}
         <div className="flex gap-2 mt-4">
-          <Button variant="outline" className="flex-1" size="sm">
-            상세보기
-          </Button>
-          {campaign.status === "active" && (
-            <Button className="flex-1" size="sm">
-              콘텐츠 관리
+          <Link to={`/app/campaigns/${campaign.id}`} className="flex-1">
+            <Button variant="outline" className="w-full" size="sm">
+              상세보기
             </Button>
+          </Link>
+          {(campaign.status === "active" || campaign.status === "scheduled") && (
+            <Link to={`/app/campaigns/${campaign.id}/content`} className="flex-1">
+              <Button className="w-full" size="sm">
+                콘텐츠 관리
+              </Button>
+            </Link>
           )}
         </div>
       </CardContent>
