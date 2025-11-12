@@ -158,9 +158,9 @@ const CampaignDetail = () => {
   const totalEngagement = postedCount * estimatedEngagementPerPost;
   const engagementRate = totalViews > 0 ? (totalEngagement / totalViews * 100).toFixed(2) : '0';
   
-  // 예상 매출 (ROI 기반 추정)
-  const estimatedRevenue = Math.floor(campaign.final_amount * 4.2);
-  const roi = campaign.final_amount > 0 ? Math.round((estimatedRevenue / campaign.final_amount) * 100) : 0;
+  // 전환율 계산 (참여 대비 실제 액션 비율)
+  const totalClicks = Math.floor(totalEngagement * 0.35); // 참여의 35%가 클릭으로 전환
+  const conversionRate = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(2) : '0';
 
   // 채널별 성과 데이터
   const channelPerformance = orderItems.map(item => {
@@ -261,12 +261,12 @@ const CampaignDetail = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground mb-1">예상 매출</p>
-                <p className="text-2xl font-bold">{(estimatedRevenue / 10000).toFixed(0)}만원</p>
-                <p className="text-xs text-emerald-600 mt-1">ROI {roi}%</p>
+                <p className="text-sm text-muted-foreground mb-1">전환율</p>
+                <p className="text-2xl font-bold">{conversionRate}%</p>
+                <p className="text-xs text-emerald-600 mt-1">총 {totalClicks.toLocaleString()}회 클릭</p>
               </div>
               <div className="p-3 rounded-full bg-emerald-500/10">
-                <DollarSign className="h-6 w-6 text-emerald-500" />
+                <TrendingUp className="h-6 w-6 text-emerald-500" />
               </div>
             </div>
           </CardContent>
