@@ -98,6 +98,16 @@ const Hero = () => {
             </div>
           </div>
           
+          {/* Call to Action Text */}
+          <div className="mb-6">
+            <p className="text-2xl md:text-3xl font-bold text-white mb-2">
+              첫 페이지 내 브랜드 장악
+            </p>
+            <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-accent via-accent-foreground to-accent bg-clip-text text-transparent animate-pulse">
+              당신 차례입니다.
+            </p>
+          </div>
+
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
             <Link to="/auth">
               <Button variant="outline" size="lg" className="min-w-[200px] bg-white text-primary border-white hover:bg-white/90 font-semibold">
