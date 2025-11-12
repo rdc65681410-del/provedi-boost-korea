@@ -20,7 +20,8 @@ import {
   Save,
   Camera,
   BarChart3,
-  TrendingUp
+  TrendingUp,
+  MessageSquare
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -489,19 +490,19 @@ const Settings = () => {
         <TabsContent value="integrations" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>맘카페 계정 연동</CardTitle>
+              <CardTitle>채널톡 연동</CardTitle>
               <CardDescription>
-                네이버 맘카페 계정을 연동하여 자동 게시 기능을 활성화하세요
+                채널톡을 연동하여 고객 문의 및 상담 관리를 자동화하세요
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                    <User className="h-5 w-5 text-emerald-500" />
+                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                    <MessageSquare className="h-5 w-5 text-violet-500" />
                   </div>
                   <div>
-                    <p className="font-medium">네이버 계정</p>
+                    <p className="font-medium">채널톡</p>
                     <p className="text-sm text-muted-foreground">연동 안됨</p>
                   </div>
                 </div>
@@ -512,7 +513,7 @@ const Settings = () => {
               </div>
               <div className="p-4 rounded-lg bg-muted">
                 <p className="text-sm text-muted-foreground">
-                  💡 <strong>자동 게시 기능:</strong> 네이버 계정을 연동하면 생성된 콘텐츠를 자동으로 맘카페에 게시할 수 있습니다.
+                  💡 <strong>실시간 고객 지원:</strong> 채널톡을 연동하면 고객 문의를 실시간으로 관리하고 캠페인 관련 상담을 효율적으로 처리할 수 있습니다.
                 </p>
               </div>
             </CardContent>
