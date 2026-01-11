@@ -1,59 +1,24 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import AppLayout from "./pages/App";
-import Dashboard from "./pages/app/Dashboard";
-import Analyze from "./pages/app/Analyze";
-import ContentGenerate from "./pages/app/ContentGenerate";
-import Channels from "./pages/app/Channels";
-import Rankings from "./pages/app/Rankings";
-import Timing from "./pages/app/Timing";
-import Packages from "./pages/app/Packages";
-import Reports from "./pages/app/Reports";
-import Campaigns from "./pages/app/Campaigns";
-import CampaignDetail from "./pages/app/CampaignDetail";
-import CampaignContent from "./pages/app/CampaignContent";
-import Admin from "./pages/app/Admin";
-import Settings from "./pages/app/Settings";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from '@/pages/Home';
+import FriendsPage from '@/pages/Friends';
+import MissionsPage from '@/pages/Missions';
+import RewardsPage from '@/pages/Rewards';
+import RankingPage from '@/pages/Ranking';
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen">
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/app" element={<AppLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="analyze" element={<Analyze />} />
-            <Route path="generate" element={<ContentGenerate />} />
-            <Route path="channels" element={<Channels />} />
-            <Route path="rankings" element={<Rankings />} />
-            <Route path="content" element={<Dashboard />} />
-            <Route path="timing" element={<Timing />} />
-            <Route path="packages" element={<Packages />} />
-            <Route path="campaigns" element={<Campaigns />} />
-            <Route path="campaigns/:id" element={<CampaignDetail />} />
-            <Route path="campaigns/:id/content" element={<CampaignContent />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="admin" element={<Admin />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/friends" element={<FriendsPage />} />
+          <Route path="/missions" element={<MissionsPage />} />
+          <Route path="/rewards" element={<RewardsPage />} />
+          <Route path="/ranking" element={<RankingPage />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      </div>
+    </Router>
+  );
+}
 
 export default App;
